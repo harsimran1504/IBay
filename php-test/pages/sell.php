@@ -1,0 +1,40 @@
+<?php
+
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sellers Page</title>
+    <link rel="stylesheet" href="../css/sellersPage.css">
+    
+      
+</head>
+<body>
+    <div class = 'form'>
+        <h2>Item Specifics</h2>
+        <form>
+            <label for="product-title">Product Title:</label>
+            <input type="text" id="product-title" name="product-title" required>
+            <label for="product-condition">Product Condition:</label>
+            <select id="product-condition" name="product-condition" required>
+                <option value="Brand new">New</option>
+                <option value="Used">Used</option>
+                <option value="Refurbished">Refurbished</option>
+            </select>
+            <label for="product-description">Product Description:</label>
+            <textarea id="product-description" name="product-description" required></textarea>
+            <label for="product-images">Photos:</label>
+            <div class = "drop-area">
+                <p>Drag and drop images here</p>
+                <input type="file" id="product-images" name="product-images" accept="image/*" multiple>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    
+</body>
+</html>
