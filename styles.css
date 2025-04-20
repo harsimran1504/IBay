@@ -14,14 +14,42 @@ body { /* StyleSheet for body */
 }
 
 .Divider{ 
-    padding: 5px; 
+    padding: 1px; 
+}
+
+.ProfileBar {
+    display: flex;
+    justify-content: space-between; /* Pushes content to the edges */
+    align-items: center; /* Aligns items vertically */
+    padding: 10px 20px; /* Adds some spacing */
+}
+
+.Profile {
+    display: flex;
+    gap: 15px; /* Adds spacing between Login and Register links */
+}
+
+.BasketAndSellers {
+    display: flex;
+    gap: 15px; /* Adds spacing between Basket and Sell Item links */
+}
+
+.BasketAndSellers img {
+    width: 24px; /* Adjust size of icons */
+    height: 24px;
+    cursor: pointer; /* Adds a pointer cursor on hover */
+}
+
+.Profile a, .BasketAndSellers a {
+    text-decoration: none; /* Removes underline from links */
+    color: #000000; /* Bootstrap primary color */  
 }
 
 .Title-SearchBar {
     display: flex; 
     align-items: center; 
-    gap: 10px; 
-    padding: 10px; 
+    gap: 5px; 
+    padding: 5px; 
 }
 
 .Title-SearchBar header h1 {
@@ -32,7 +60,7 @@ body { /* StyleSheet for body */
 .Title-SearchBar form {
     display: flex; 
     flex-grow: 1; 
-    gap: 20px; 
+    gap: 10px; 
 }
 
 .Title-SearchBar form input {
@@ -43,7 +71,7 @@ body { /* StyleSheet for body */
     max-width: 600px; 
 }
 .Title-SearchBar form button {
-    padding: 5px 10px; 
+    padding: 10px 10px; 
     font-size: 16px; 
     cursor: pointer; 
 }
@@ -66,11 +94,13 @@ body { /* StyleSheet for body */
 .NavButtons {
     padding: 5px; 
 }
+
 .NavButtons ul {
     list-style-type: none; 
     display: flex; 
     justify-content: space-around; 
 }
+
 .NavButtons ul li a {
     text-decoration: none;
     color: #333; 
