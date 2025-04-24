@@ -1,5 +1,19 @@
 <?php
-include 'includes/db.php';
+
+$servername = 'sci-project.lboro.ac.uk';
+$dbname = '295group5';
+
+$username = '295group5';
+$password = 'becvUgUxpXMijnWviR7h';
+
+
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+} else {
+    // echo "Connected successfully";
+}
 session_start();
 
 ?>
@@ -80,7 +94,23 @@ session_start();
 
     <div class="MainContent">
         <div class="Products">
-            <p> MAIN CONTENT HERE </p>
+            <?php
+            // Example query to fetch products from the database
+            $sql = "SELECT title FROM iBayItems";
+            $result = mysqli_query($conn, $sql);
+            if (mysqli_num_rows($result) > 0) {
+                // Output data of each row
+                while($row = mysqli_fetch_assoc($result)) {
+                    echo "<div class='product-item'>";
+                    echo "<h2>" . $row["title"] . "</h2>";
+                    echo "</div>";
+                }
+            } else {
+                echo "0 results";
+            }
+            mysqli_close($conn);
+
+            ?>
         </div>
     </div>
 

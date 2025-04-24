@@ -1,12 +1,14 @@
 <?php 
 
-$servername = '295group5';
+// MIGHT REMOVE DOESN'T WORK WHEN USING INCLUDE
+
+$servername = 'sci-project.lboro.ac.uk';
 $dbname = '295group5';
 
 $username = '295group5';
 $password = 'becvUgUxpXMijnWviR7h';
 
 
-$db = mysqli_connect($servername, $username, $password, $dbname);
+$conn = mysqli_connect($servername, $username, $password, $dbname);
 
 ?>
