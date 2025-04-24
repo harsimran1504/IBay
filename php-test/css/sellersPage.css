@@ -1,88 +1,146 @@
-* { 
+body {
+    padding: 20px 40px;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    box-sizing: border-box;   
+}
+
+h2 {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700; 
+    font-style: normal;
+    margin-bottom: 20px;
+}
+
+div.form
+{
+    width: 100%;
+    max-width: 600px;
+    display: block;
+    text-align: center;
+}
+
+div.drop-area {
+    border: 2px dashed #007bff; 
+    border-radius: 10px; 
+    padding: 20px; 
+    text-align: center; 
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400; 
+    font-style: normal;
+    margin-bottom: 20px; 
+    width: 100%;
+    max-width: 600px;
+    display: block;
+    text-align: center;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+div.drop-area p {
     margin: 0; 
-    padding: 0; 
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400; 
+    font-style: normal;
+    padding-bottom: 20px;
+}
+
+form {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400; 
+    font-style: normal;
+    margin-top: 80px;
+    text-align: left;
+    margin: 0 auto;
+}
+
+form label,
+form input[type="text"],
+form textarea,
+form select,
+form button {
+    display: block; 
+    width: 100%;  
+    margin-bottom: 15px; 
     box-sizing: border-box; 
 }
 
-body { /* StyleSheet for body */
-    font-family: 'Arial', sans-serif; 
-    background-color: #f4f4f4; 
-    color: #333333; 
-    line-height: 1.6; 
-    margin: 0; 
-    padding: 0; 
-}
-
-.Divider{ 
-    padding: 5px; 
-}
-
-.Title-SearchBar {
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-    padding: 10px; 
-}
-
-.Title-SearchBar header h1 {
-    margin: 0;
-    font-size: 50px; 
-}
-
-.Title-SearchBar form {
-    display: flex; 
-    flex-grow: 1; 
-    gap: 20px; 
-}
-
-.Title-SearchBar form input {
-    flex-grow: 1; 
-    padding: 5px; 
-    font-size: 16px; 
-    width: 100%; 
-    max-width: 600px; 
-}
-.Title-SearchBar form button {
-    padding: 5px 10px; 
-    font-size: 16px; 
-    cursor: pointer; 
-}
-
-.Title-SearchBar form button.btn.btn-primary {
-    background-color: #007bff; 
-    border: none; 
-    color: white; 
-    padding: 10px 20px; 
-    text-align: center; 
-    text-decoration: none; 
-    display: inline-block;
+form label {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
     font-size: 16px;
-    margin: 4px 2px; 
-    cursor: pointer; 
-    border-radius: 4px; 
+    margin-bottom: 5px; 
 }
 
-/*Item Category Buttons*/
-.NavButtons {
-    padding: 5px; 
-}
-.NavButtons ul {
-    list-style-type: none; 
-    display: flex; 
-    justify-content: space-around; 
-}
-.NavButtons ul li a {
-    text-decoration: none;
-    color: #333; 
-    padding: 10px 15px; 
+form button {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    max-width: 600px;
 }
 
-.footer { /* Change footer style */
-    background-color: #6e6d6d; 
-    color: #fff; 
-    text-align: center; 
-    padding: 5px; 
-    position: fixed; 
-    bottom: 0; 
-    width: 100%; 
+form input[type="text"] {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px; 
+    font-size: 16px;
+    width: 100%;
+    max-width: 600px;
+    box-sizing: border-box;
+}
+
+form textarea {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px; 
+    font-size: 16px;
+    width: 100%;
+    max-width: 600px;
+    height: 150px; 
+    box-sizing: border-box;
+    resize: vertical; 
+}
+
+form select {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px; 
+    font-size: 16px;
+    width: 100%;
+    max-width: 200px;
+    box-sizing: border-box;
+    background-color: #fff; 
+    appearance: none; 
+}
+
+form button:hover {
+    background-color: #0056b3;
 }
