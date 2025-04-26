@@ -1,5 +1,5 @@
 <?php
-$host = "sci-project.lboro.ac.uk";       // Connection parameters for database
+$host = "localhost";       // Connection parameters for database
 $user = "295group5";
 $pass = "becvUgUxpXMijnWviR7h";
 $dbname = "295group5";
@@ -29,12 +29,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
         exit("User registration failed.");
     }
     if (!preg_match("/[\W]/", $password)) {
-        echo "Password must include a special character.";
+        echo "Password must include a special character(_ is a Word Character).";
         exit("User registration failed.");
     }
     if ($password !== $confirm) { //To check if password inputs match
         echo "<div class='alert alert-danger'>Passwords do not match!</div>";
-        exit("User registration failed.");
+        //exit("User registration failed.");
     }
     $conn = new mysqli(hostname: $host, username: $user, password: $pass, database: $dbname);
 
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
     <div class="container mt-5"> <!-- BootStrap: makes input, buttons look nice-->
         <h2 class="text-center">Registration</h2>
         <p class="text-center">Enter your:</p>
-        <form method="POST" action="" class="mt-4">
+        <form method="POST" action="/login" class="mt-4">
 
             <div class="mb-3">
                 <label for="firstName" class="form-label">First Name</label>
