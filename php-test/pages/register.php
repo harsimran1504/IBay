@@ -1,8 +1,8 @@
 <?php
-$host = "localhost";       // Connection parameters for database
-$user = "cobp3";
-$pass = "4rOEJBNGW5";
-$dbname = "cobp3";
+$host = "sci-project.lboro.ac.uk";       // Connection parameters for database
+$user = "295group5";
+$pass = "becvUgUxpXMijnWviR7h";
+$dbname = "295group5";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
     $firstName = $_POST['firstName']; //values from the form
@@ -63,10 +63,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
     header("Location: login.php"); 
     exit(); 
 }
-
-
-
-
 
 ?>
 
