@@ -1,4 +1,72 @@
 <?php
+$host = "localhost";       // Connection parameters for database
+$user = "cobp3";
+$pass = "4rOEJBNGW5";
+$dbname = "cobp3";
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
+    $firstName = $_POST['firstName']; //values from the form
+    $lastName = $_POST['lastName'];
+    $Name = $firstName . " " . $lastName; //Concatenate first and last name
+    $email = $_POST['email'];
+    $password = $_POST['newPassword'];
+    $confirm = $_POST['reEnterPassword'];
+
+    if (strlen($password) < 8) { //To check if password is at least 8 characters long
+        echo "<div class='alert alert-danger'>Password must be at least 8 characters long!</div>";
+        exit("User registration failed.");
+    } 
+    if (!preg_match("/[A-Z]/", $password)) { //all checks for password strength required
+        echo "Password must include an uppercase letter.";
+        exit("User registration failed.");
+    }
+    if (!preg_match("/[a-z]/", $password)) {
+        echo "Password must include a lowercase letter.";
+        exit("User registration failed.");
+    }
+    if (!preg_match("/[0-9]/", $password)) {
+        echo "Password must include a number.";
+        exit("User registration failed.");
+    }
+    if (!preg_match("/[\W]/", $password)) {
+        echo "Password must include a special character.";
+        exit("User registration failed.");
+    }
+    if ($password !== $confirm) { //To check if password inputs match
+        echo "<div class='alert alert-danger'>Passwords do not match!</div>";
+        exit("User registration failed.");
+    }
+    $conn = new mysqli(hostname: $host, username: $user, password: $pass, database: $dbname);
+
+    // Check connection
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error); //Check if connection is successful
+    }
+
+    // Insert user data into the database
+    $sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+    $stmt = $conn->prepare($sql);
+    if ($stmt) { 
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT); //Hash password
+        $stmt->bind_param("sss", $Name, $email, $hashedPassword);
+        if ($stmt->execute()) {
+            echo "<div class='alert alert-success'>Registration successful!</div>";
+        } else {
+            echo "<div class='alert alert-danger'>Error: " . $stmt->error . "</div>";
+        }
+        $stmt->close();
+    } else {
+        echo "<div class='alert alert-danger'>Error: " . $conn->error . "</div>";
+    }
+
+    $conn->close();
+    header("Location: login.php"); 
+    exit(); 
+}
+
+
+
+
 
 ?>
 
@@ -18,16 +86,16 @@
     <div class="container mt-5"> <!-- BootStrap: makes input, buttons look nice-->
         <h2 class="text-center">Registration</h2>
         <p class="text-center">Enter your:</p>
-        <form action="/login" method="POST" class="mt-4">
+        <form method="POST" action="" class="mt-4">
 
             <div class="mb-3">
                 <label for="firstName" class="form-label">First Name</label>
-                <input type="text" class="form-control" id="firstName" name="password" required>
+                <input type="text" class="form-control" id="firstName" name="firstName" required>
             </div>
 
             <div class="mb-3">
                 <label for="lastName" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="password" name="password" required>
+                <input type="text" class="form-control" id="lastName" name="lastName" required>
             </div>
 
             <div class="mb-3">
@@ -37,12 +105,12 @@
 
             <div class="mb-3">
                 <label for="password" class="form-label">New Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="password" class="form-control" id="newPassword" name="newPassword" required>
             </div>
 
             <div class="mb-3">
                 <label for="password" class="form-label">Re-Enter Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <input type="password" class="form-control" id="reEnterPassword" name="reEnterPassword" required>
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Register</button>
