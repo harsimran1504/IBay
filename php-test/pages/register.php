@@ -1,81 +1,83 @@
 <?php
+session_start(); // Start the session to access session variables
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$host = "localhost";       // Connection parameters for database
+$host = "localhost";       //Connection parameters for database
 $user = "295group5";
 $pass = "becvUgUxpXMijnWviR7h";
 $dbname = "295group5";
 
+$errorMessage = ""; //error message variable here
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
+
     $firstName = $_POST['firstName']; //values from the form
     $lastName = $_POST['lastName'];
     $Name = $firstName . " " . $lastName; //Concatenate first and last name
     $email = $_POST['email'];
+    $address = $_POST['address'];
+    $postcode = $_POST['postcode'];
     $password = $_POST['newPassword'];
     $confirm = $_POST['reEnterPassword'];
+    $rating = 0; //Default rating for new users
 
+    //format checks here for password and email
 
-    if (strlen($password) < 8) { //To check if password is at least 8 characters long
-        echo "<div class='alert alert-danger'>Password must be at least 8 characters long!</div>";
-        exit("User registration failed.");
+    if (strlen($password) < 8) { //To check if password is at least 8 characters long 
+        $errorMessage =  "<div class='alert alert-danger'>Password must be at least 8 characters long!</div>";
+        
     } 
     if (!preg_match("/[A-Z]/", $password)) { //all checks for password strength required
-        echo "Password must include an uppercase letter.";
-        exit("User registration failed.");
+        $errorMessage = "Password must include an uppercase letter.";
+        
     }
     if (!preg_match("/[a-z]/", $password)) {
-        echo "Password must include a lowercase letter.";
-        exit("User registration failed.");
+        $errorMessage = "Password must include a lowercase letter.";
+        
     }
     if (!preg_match("/[0-9]/", $password)) {
-        echo "Password must include a number.";
-        exit("User registration failed.");
+        $errorMessage = "Password must include a number.";
+        
     }
     if (!preg_match("/[\W]/", $password)) {
-        echo "Password must include a special character(_ is a Word Character).";
-        exit("User registration failed.");
+        $errorMessage = "Password must include a special character(_ is a Word Character).";
+        
     }
     if ($password !== $confirm) { //To check if password inputs match
-        echo "<div class='alert alert-danger'>Passwords do not match!</div>";
-        //exit("User registration failed.");
+        $errorMessage = "<div class='alert alert-danger'>Passwords do not match!</div>";
+        
     }
-
-
-    $conn = new mysqli($host, $user, $pass, $dbname);
-
 
     // Check connection
-    if ($conn->connect_error) {
-        die("<div class='alert alert-danger'>Connection failed: " . $conn->connect_error . "</div>");
+    if (empty($errorMessage)) {
+        $conn = new mysqli($host, $user, $pass, $dbname);
+
+        if ($conn->connect_error) {
+            die("Connection failed: " . $conn->connect_error);
+        }
+
+        $sql = "INSERT INTO iBayMembers (name, email, password, address, postcode, rating) VALUES (?, ?, ?, ?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+
+        if ($stmt) {
+            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+            $stmt->bind_param("sssssi", $Name, $email, $hashedPassword, $address, $postcode, $rating);
+
+            if ($stmt->execute()) {
+                $_SESSION['registration_success'] = true; // Set session variable to indicate success
+                header("Location: login.php");
+                exit();
+            } else {
+                $errorMessage = "Error: " . $stmt->error;
+            }
+            $stmt->close();
+        } else {
+            $errorMessage = "Prepare failed: " . $conn->error;
+        }
+        $conn->close();
     }
-
-
-    // Insert user data into the database
-    $sql = "INSERT INTO iBayMembers (name, email, password) VALUES (?, ?, ?)";
-    $stmt = $conn->prepare($sql);
-
-    if (!$stmt) {
-        die("<div class='alert alert-danger'>Prepare failed: " . $conn->error . "</div>");
-    }
-
-    $hashedPassword = password_hash($password, PASSWORD_DEFAULT); //Hash password
-    $stmt->bind_param("sss", $Name, $email, $hashedPassword);
-    
-    if ($stmt->execute()) {
-        // Success: Redirect to login page
-        header("Location: login.php");
-        exit();
-    } else {
-        echo "<div class='alert alert-danger'>Error: " . $stmt->error . "</div>";
-    }
-
-    // Close statement and connection
-    $stmt->close();
-    $conn->close();
-
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -94,21 +96,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
     <div class="container mt-5"> <!-- BootStrap: makes input, buttons look nice-->
         <h2 class="text-center">Registration</h2>
         <p class="text-center">Enter your:</p>
+
+        <?php if (!empty($errorMessage)): ?> <!-- In the case of an error, show msg -->
+            <div class="alert alert-danger">
+                <?php echo $errorMessage; ?>
+            </div>
+        <?php endif; ?>
         <form method="POST" action="" class="mt-4">
 
             <div class="mb-3">
                 <label for="firstName" class="form-label">First Name</label>
-                <input type="text" class="form-control" id="firstName" name="firstName" required>
+                <input type="text" class="form-control" id="firstName" name="firstName" 
+                    value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>" required>
             </div>
 
             <div class="mb-3">
                 <label for="lastName" class="form-label">Last Name</label>
-                <input type="text" class="form-control" id="lastName" name="lastName" required>
+                <input type="text" class="form-control" id="lastName" name="lastName" 
+                    value="<?php echo isset($lastName) ? htmlspecialchars($lastName) : ''; ?>" required>
             </div>
 
             <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="email" name="email" required><!-- Automatic Check for email -> javascript for more Adv check-->
+                <input type="email" class="form-control" id="email" name="email" 
+                    value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="address" class="form-label">Address</label>
+                <input type="address" class="form-control" id="address" name="address" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="postcode" class="form-label">Postcode</label>
+                <input type="postcode" class="form-control" id="postcode" name="postcode" required>
             </div>
 
             <div class="mb-3">
