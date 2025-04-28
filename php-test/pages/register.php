@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $host = "localhost";       // Connection parameters for database
 $user = "295group5";
 $pass = "becvUgUxpXMijnWviR7h";
@@ -11,6 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
     $email = $_POST['email'];
     $password = $_POST['newPassword'];
     $confirm = $_POST['reEnterPassword'];
+
 
     if (strlen($password) < 8) { //To check if password is at least 8 characters long
         echo "<div class='alert alert-danger'>Password must be at least 8 characters long!</div>";
@@ -36,32 +40,40 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
         echo "<div class='alert alert-danger'>Passwords do not match!</div>";
         //exit("User registration failed.");
     }
-    $conn = new mysqli(hostname: $host, username: $user, password: $pass, database: $dbname);
+
+
+    $conn = new mysqli($host, $user, $pass, $dbname);
+
 
     // Check connection
     if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error); //Check if connection is successful
+        die("<div class='alert alert-danger'>Connection failed: " . $conn->connect_error . "</div>");
     }
+
 
     // Insert user data into the database
-    $sql = "INSERT INTO users (name, email, password) VALUES (?, ?, ?)";
+    $sql = "INSERT INTO iBayMembers (name, email, password) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    if ($stmt) { 
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT); //Hash password
-        $stmt->bind_param("sss", $Name, $email, $hashedPassword);
-        if ($stmt->execute()) {
-            echo "<div class='alert alert-success'>Registration successful!</div>";
-        } else {
-            echo "<div class='alert alert-danger'>Error: " . $stmt->error . "</div>";
-        }
-        $stmt->close();
-    } else {
-        echo "<div class='alert alert-danger'>Error: " . $conn->error . "</div>";
+
+    if (!$stmt) {
+        die("<div class='alert alert-danger'>Prepare failed: " . $conn->error . "</div>");
     }
 
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT); //Hash password
+    $stmt->bind_param("sss", $Name, $email, $hashedPassword);
+    
+    if ($stmt->execute()) {
+        // Success: Redirect to login page
+        header("Location: login.php");
+        exit();
+    } else {
+        echo "<div class='alert alert-danger'>Error: " . $stmt->error . "</div>";
+    }
+
+    // Close statement and connection
+    $stmt->close();
     $conn->close();
-    header("Location: login.php"); 
-    exit(); 
+
 }
 
 ?>
@@ -82,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
     <div class="container mt-5"> <!-- BootStrap: makes input, buttons look nice-->
         <h2 class="text-center">Registration</h2>
         <p class="text-center">Enter your:</p>
-        <form method="POST" action="/login" class="mt-4">
+        <form method="POST" action="" class="mt-4">
 
             <div class="mb-3">
                 <label for="firstName" class="form-label">First Name</label>
