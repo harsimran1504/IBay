@@ -1,8 +1,8 @@
 <?php
+session_start(); // Start the session
 
 $servername = 'sci-project.lboro.ac.uk';
 $dbname = '295group5';
-
 $username = '295group5';
 $password = 'becvUgUxpXMijnWviR7h';
 
@@ -29,12 +29,25 @@ session_start();
 </head>
 
 <body>
+    <?php if (isset($_SESSION['logout_msg'])) :?>
+        <div class="alert alert-success alert-dismissible fade show p-3 rounded-3 shadow-sm text-center fw-bold" role="alert" id="successAlert">
+            Sign out successful! You have been logged out.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
 
-    <?php if (isset($_SESSION['user_id'])): ?>
+    <?php unset($_SESSION['logout_msg']); // Clear it after showing ?>
+    <?php endif; ?>
+    
+
+    <?php if (isset($_SESSION['name'])): ?>
+        <div class="WelcomeBar">
+            <p>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?></p>
+        </div>
+
         <div class = "ProfileBar"> 
             <div class="Profile">
                 <a href="#...">My Profile</a>
-                <a href="#...">Sign Out</a>
+                <a href="../includes/logout.php">Sign Out</a>
             </div>  
             
             <div class="BasketAndSellers">
@@ -70,7 +83,7 @@ session_start();
         <!-- Search bar test-->
         <form action="/search" method="GET">
             <input type="text" name="query" placeholder="Search for any item" aria-label="Search">
-            <button class="btn btn-primary">Search</button><!-- BootStrap -->
+            <button class="btn btn-primary">Search</button> <!-- BootStrap -->
         </form>
     </div>
 
@@ -126,5 +139,21 @@ session_start();
         </div>
     </footer>
     
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>//button to close registration succesful alert, fades out after 5s
+    window.addEventListener('DOMContentLoaded', (event) => {
+        const successAlert = document.getElementById('successAlert');
+        if (successAlert) {
+            setTimeout(() => {
+                successAlert.classList.remove('show');
+                setTimeout(() => {
+                    successAlert.remove();
+                }, 500); // Fade out timing
+            }, 5000); // 5s delay
+        }
+    });
+    </script>
+
 </body>
 </html>

@@ -1,0 +1,4 @@
+<?php //Settings for profile
+
+
+?>

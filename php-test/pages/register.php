@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
         
     }
 
-    // Check connection
+    // Check for Error and connection
     if (empty($errorMessage)) {
         $conn = new mysqli($host, $user, $pass, $dbname);
 
@@ -68,11 +68,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
                 $_SESSION['registration_success'] = true; // Set session variable to indicate success
                 header("Location: login.php");
                 exit();
-            } else {
+            } 
+            else {
                 $errorMessage = "Error: " . $stmt->error;
             }
             $stmt->close();
-        } else {
+        } 
+        else {
             $errorMessage = "Prepare failed: " . $conn->error;
         }
         $conn->close();
@@ -94,6 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
 <body> 
 
     <div class="container mt-5"> <!-- BootStrap: makes input, buttons look nice-->
+
         <h2 class="text-center">Registration</h2>
         <p class="text-center">Enter your:</p>
 
@@ -107,7 +110,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
             <div class="mb-3">
                 <label for="firstName" class="form-label">First Name</label>
                 <input type="text" class="form-control" id="firstName" name="firstName" 
-                    value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>" required>
+                    value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>" required> <!-- They stay onscreen if error occurs -->
             </div>
 
             <div class="mb-3">
@@ -145,6 +148,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
             <button type="submit" class="btn btn-primary w-100">Register</button>
            
         </form>
+
+        <div class="text-center mt-3"> <!-- Center the title and add margin below -->
+            Got an Account?
+            <a href="login.php">Login here</a> <!-- Link to login page -->
+        </div>
+
+        <div class="text-center mt-3">
+        <a href="index.php">Back to Homepage</a> <!-- Link to Homepage page -->
+        </div>
+        
     </div>
 
 </body>
