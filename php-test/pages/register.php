@@ -49,6 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
         
     }
 
+    mysqli_report(MYSQLI_REPORT_OFF);  
+
     // Check for Error and connection
     if (empty($errorMessage)) {
         $conn = new mysqli($host, $user, $pass, $dbname);
@@ -70,6 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
                 exit();
             } 
             else {
+                if ($conn->errno == 1062) { // Duplicate entry error code
+                    $errorMessage = "Error: Email already exists. Please use a different email address.";
+                } 
+                else {
+                    $errorMessage = "Error: " . $stmt->error;
+                }
                 $errorMessage = "Error: " . $stmt->error;
             }
             $stmt->close();
