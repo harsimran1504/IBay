@@ -46,7 +46,7 @@ session_start();
 
         <div class = "ProfileBar"> 
             <div class="Profile">
-                <a href="#...">My Profile</a>
+                <a href="profile.php">Account Settings</a>
                 <a href="../includes/logout.php">Sign Out</a>
             </div>  
             
