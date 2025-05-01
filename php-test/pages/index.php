@@ -110,14 +110,15 @@ session_start();
             <?php
             // Example query to fetch products from the database
             $sql = "SELECT title FROM iBayItems";
-            $sqlImages = "SELECT image From iBayImages WHERE imageId=" $row["title"]
+            
             $result = mysqli_query($conn, $sql);
             if (mysqli_num_rows($result) > 0) {
                 // Output data of each row
                 while($row = mysqli_fetch_assoc($result)) {
+                    $sqlImages = "SELECT image From iBayImages WHERE imageId=" $row["title"]
                     echo "<div class='product-item'>";
                     echo "<h2>" . $row["title"] . "</h2>";
-                    echo "<img src="pic_trulli.jpg" alt=$row["title"]>"
+                    echo "<img src=$sqlImages, alt=$row["title"]>"
                     echo "</div>";
                 }
             } else {
