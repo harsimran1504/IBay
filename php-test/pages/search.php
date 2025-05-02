@@ -24,6 +24,19 @@ $query = trim($query);
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
+    <div class="NavButtons">
+        <nav>
+            <ul>
+                <li><a href="...">Home</a></li>
+                <li><a href="...">Electronics</a></li>
+                <li><a href="...">Fashion</a></li>
+                <li><a href="...">Books</a></li>
+                <li><a href="...">Furniture</a></li>
+                <li><a href="...">Toys</a></li>
+                <li><a href="...">Miscellaneous</a></li>
+            </ul>
+        </nav>
+    </div>
     <div class="container mt-4">
         <h2>Search Results for: <em><?php echo htmlspecialchars($query); ?></em></h2>
 
