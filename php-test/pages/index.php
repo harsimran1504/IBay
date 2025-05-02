@@ -28,6 +28,7 @@ session_start();
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 
+
 <body>
     <?php if (isset($_SESSION['logout_msg'])) :?>
         <div class="alert alert-success alert-dismissible fade show p-3 rounded-3 shadow-sm text-center fw-bold" role="alert" id="successAlert">
@@ -46,7 +47,7 @@ session_start();
 
         <div class = "ProfileBar"> 
             <div class="Profile">
-                <a href="profile.php">Account Settings</a>
+                <a href="#...">My Profile</a>
                 <a href="../includes/logout.php">Sign Out</a>
             </div>  
             
@@ -81,7 +82,7 @@ session_start();
             <h1>Ibay</h1>
         </header>
         <!-- Search bar test-->
-        <form action="/search" method="GET">
+        <form action="search.php" method="GET">
             <input type="text" name="query" placeholder="Search for any item" aria-label="Search">
             <button class="btn btn-primary">Search</button> <!-- BootStrap -->
         </form>
@@ -110,15 +111,12 @@ session_start();
             <?php
             // Example query to fetch products from the database
             $sql = "SELECT title FROM iBayItems";
-            
             $result = mysqli_query($conn, $sql);
             if (mysqli_num_rows($result) > 0) {
                 // Output data of each row
                 while($row = mysqli_fetch_assoc($result)) {
-                    //$sqlImages = "SELECT image From iBayImages WHERE imageId=" $row["title"]
                     echo "<div class='product-item'>";
                     echo "<h2>" . $row["title"] . "</h2>";
-                    //echo "<img src=$sqlImages, alt=$row["title"]>"
                     echo "</div>";
                 }
             } else {
