@@ -1,11 +1,24 @@
 <?php 
 session_start(); 
 
+$servername = 'sci-project.lboro.ac.uk';
+$dbname = '295group5';
+$username = '295group5';
+$password = 'becvUgUxpXMijnWviR7h';
+
 $userId = $_SESSION['name'] ?? null;
 if (!$userId) {
     header("Location: login.php");
     exit();
 }
+
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+} else {
+    // echo "Connected successfully";
+}
+
 
 ?>
 
@@ -33,8 +46,8 @@ if (!$userId) {
         </div>  
         
         <div class="BasketAndSellers">
-            <a href="basket.php"><img src="..." alt="View Basket"></a>
-            <a href="sell.php"><img src="..." alt="Sell Item"></a>
+            <a href="basket.php"><img src="..." >View Basket</a>
+            <a href="sell.php"><img src="..." > Sell Item</a>
         </div>
     </div>
 
@@ -42,10 +55,17 @@ if (!$userId) {
         <hr class="solid">
     </div>
 
+    <class="row"> 
+        <div class="column-12 text-center mt-4 mb-4">
+            <h2 class="text-center">Profile Details</h2>
+        </div>
+        <div class="column-12 text-center mt-4 mb-4">
+            <h3 class="text-center">Name: <?php echo htmlspecialchars($_SESSION['name']); ?></h3>
+    </class>    
     <class="ChangeAccountSettings">
         <h2 class="text-center">Account Settings</h2>
         <p class="text-center">Change your:</p>
-        <div class="d-flex justify-content-center">
+        <div class="d-flex justify-content-left">
             <method="POST" action="" class="mt-4">
                 <div class="mb-3">
                     <label for="firstName" class="form-label">First Name</label>
@@ -77,7 +97,7 @@ if (!$userId) {
                 <button type="submit" class="btn btn-primary">Update Account</button>
             </method>
         </div>
-    </>
+    </c>
 
 </body>
 </html>
