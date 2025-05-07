@@ -22,10 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
             if ($row = $result->fetch_assoc()) {
                 //debug
     
-                echo "Hashed password from DB: " . $row['password'] . "<br>";
-                echo "User-entered password: " . $password . "<br>";
-                var_dump(password_verify($password, $row['password']));
-                var_dump( password_verify("Bonbon-123", $row['password']));
+                //echo "Hashed password from DB: " . $row['password'] . "<br>";
+                //echo "User-entered password: " . $password . "<br>";
+                //var_dump(password_verify($password, $row['password']));
+                //var_dump( password_verify("Bonbon-123", $row['password']));
 
                 // Fetch hashed password from DB
                 if (password_verify($password, $row['password'])) { // Verify password
