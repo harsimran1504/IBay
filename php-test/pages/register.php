@@ -1,4 +1,7 @@
 <?php
+
+// TEST LOGIN INFO, test@test.com, Test123.
+
 session_start(); // Start the session to access session variables
 error_reporting(E_ALL);
 ini_set('display_errors', 1);

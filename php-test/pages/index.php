@@ -1,4 +1,8 @@
 <?php
+
+// TEST LOGIN INFO, test@test.com, Test123.
+
+
 session_start(); // Start the session
 
 $servername = 'sci-project.lboro.ac.uk';
@@ -14,7 +18,6 @@ if (!$conn) {
 } else {
     // echo "Connected successfully";
 }
-session_start();
 
 ?>
 <!DOCTYPE html>
