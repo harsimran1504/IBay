@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
                 var_dump( password_verify("Bonbon-123", $row['password']));
 
                 // Fetch hashed password from DB
-                if (password_verify($password, $row['password'])) { // Verify password
-                
+                //if (password_verify($password, $row['password'])) { // Verify password
+                if ($password == $row['password']) {
                     // Password correct
                     $_SESSION['name'] = $row['name']; //Get user name from DB
                     header("Location: index.php");
