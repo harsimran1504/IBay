@@ -1,4 +1,7 @@
 <?php
+
+// TEST LOGIN INFO, test@test.com, Test123.
+
 session_start();
 
 $host = "localhost";       //Connection parameters for database
