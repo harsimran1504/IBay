@@ -15,6 +15,14 @@ h2 {
     margin-bottom: 20px;
 }
 
+.back {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600; 
+    font-style: normal;
+    margin-bottom: 20px;
+}
+
 div.form
 {
     width: 100%;

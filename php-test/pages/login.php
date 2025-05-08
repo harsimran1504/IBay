@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
     
     $conn = new mysqli($host, $user, $pass, $dbname);
 
-    if ($stmt = $conn->prepare("SELECT name, email, password FROM iBayMembers WHERE email = ?")) {
+    if ($stmt = $conn->prepare("SELECT userId, name, email, password FROM iBayMembers WHERE email = ?")) {
         $stmt->bind_param("s", $email); // Bind email only
         if ($stmt->execute()) {
             $result = $stmt->get_result();
@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') { // Check if the form is submitted
                 
                     // Password correct
                     $_SESSION['name'] = $row['name']; //Get user name from DB
+                    $_SESSION['userId'] = $row['userId']; //Get userId from DB --> for Id of item seller
                     header("Location: index.php");
                     exit();
                 } else {

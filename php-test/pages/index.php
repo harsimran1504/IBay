@@ -4,7 +4,7 @@
 
 
 session_start(); // Start the session
-
+var_dump($_SESSION); // Debugging line to check session variables
 $servername = 'sci-project.lboro.ac.uk';
 $dbname = '295group5';
 $username = '295group5';
@@ -45,7 +45,8 @@ if (!$conn) {
 
     <?php if (isset($_SESSION['name'])): ?>
         <div class="WelcomeBar">
-            <p>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?></p>
+            <p>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?> </p>
+            <!--<p>Welcome, <?php echo htmlspecialchars(strval($_SESSION['userId'])); ?></p>-->
         </div>
 
         <div class = "ProfileBar"> 
