@@ -60,7 +60,7 @@ if (!$conn) {
 
         <div class = "ProfileBar"> 
             <div class="Profile">
-                <a href="#...">My Profile</a>
+                <a href="profile.php">My Profile</a>
                 <a href="../includes/logout.php">Sign Out</a>
             </div>  
             
@@ -108,13 +108,13 @@ if (!$conn) {
     <div class="NavButtons">
         <nav>
             <ul>
-                <li><a href="...">Home</a></li>
-                <li><a href="...">Electronics</a></li>
-                <li><a href="...">Fashion</a></li>
-                <li><a href="...">Books</a></li>
-                <li><a href="...">Furniture</a></li>
-                <li><a href="...">Toys</a></li>
-                <li><a href="...">Miscellaneous</a></li>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="category.php?category=Electronic">Electronics</a></li>
+                <li><a href="category.php?category=Clothing">Fashion</a></li>
+                <li><a href="category.php?category=Book">Books</a></li>
+                <li><a href="category.php?category=Furniture">Furniture</a></li>
+                <li><a href="category.php?category=Toy">Toys</a></li>
+                <li><a href="category.php?category=Miscellaneous">Miscellaneous</a></li>
             </ul>
         </nav>
     </div>
@@ -123,13 +123,14 @@ if (!$conn) {
         <div class="Products">
             <?php
             // Example query to fetch products from the database
-            $sql = "SELECT title FROM iBayItems";
+            $sql = "SELECT * FROM iBayItems";
             $result = mysqli_query($conn, $sql);
             if (mysqli_num_rows($result) > 0) {
                 // Output data of each row
                 while($row = mysqli_fetch_assoc($result)) {
                     echo "<div class='product-item'>";
                     echo "<h2>" . $row["title"] . "</h2>";
+                    echo "<p>Price: £" . $row["price"] . " + " . $row["postage"] . "</p>";
                     echo "</div>";
                 }
             } else {
