@@ -99,13 +99,13 @@ if (!$conn) {
     <div class="NavButtons">
         <nav>
             <ul>
-                <li><a href="...">Home</a></li>
-                <li><a href="...">Electronics</a></li>
-                <li><a href="...">Fashion</a></li>
-                <li><a href="...">Books</a></li>
-                <li><a href="...">Furniture</a></li>
-                <li><a href="...">Toys</a></li>
-                <li><a href="...">Miscellaneous</a></li>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="category.php?category=Electronic">Electronics</a></li>
+                <li><a href="category.php?category=Clothing">Fashion</a></li>
+                <li><a href="category.php?category=Book">Books</a></li>
+                <li><a href="category.php?category=Furniture">Furniture</a></li>
+                <li><a href="category.php?category=Toy">Toys</a></li>
+                <li><a href="category.php?category=Miscellaneous">Miscellaneous</a></li>
             </ul>
         </nav>
     </div>
