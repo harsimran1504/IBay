@@ -114,13 +114,14 @@ if (!$conn) {
         <div class="Products">
             <?php
             // Example query to fetch products from the database
-            $sql = "SELECT title FROM iBayItems";
+            $sql = "SELECT * FROM iBayItems";
             $result = mysqli_query($conn, $sql);
             if (mysqli_num_rows($result) > 0) {
                 // Output data of each row
                 while($row = mysqli_fetch_assoc($result)) {
                     echo "<div class='product-item'>";
                     echo "<h2>" . $row["title"] . "</h2>";
+                    echo "<p>Price: £" . $row["price"] . " + " . $row["postage"] . "</p>";
                     echo "</div>";
                 }
             } else {
