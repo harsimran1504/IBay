@@ -1,96 +1,87 @@
 <?php
-
 // TEST LOGIN INFO, test@test.com, Test123.
 
-session_start(); // Start the session
+session_start(); // Always required at the top
+//var_dump($_SESSION); // Debugging line to check session variables
+$servername = 'sci-project.lboro.ac.uk';
+$dbname = '295group5';
+$username = '295group5';
+$password = 'becvUgUxpXMijnWviR7h';
 
-$servername = "localhost"; // Database connection parameters
-$dbname = "295group5";
-$username = "295group5";
-$password = "becvUgUxpXMijnWviR7h";
+$errorMessage = '';
 
-$errorMessage = ""; // Initialize error message variable
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $productTitle = $_POST['product-title'];
-    $productDescription = $_POST['product-description'];
-    $productCategory = $_POST['product-category'];
-    $productCondition = $_POST['product-condition'];
-    $productPrice = floatval($_POST['product-price']);
-
-    $productPostageWay = $_POST['product-postage-way'];
-    $productPostagePrice = floatval($_POST['product-postage-price']);
-
-    // Product images
-    //$productImages = $_FILES['product-images'];
-    //if (is_array($productImages['tmp_name'])) {
-        //$imageData = $productImages['tmp_name'][0];
-        //$imageSize = $productImages['size'][0];
-    //} else {
-    //$imageData = $productImages['tmp_name'];
-        //$imageSize = $productImages['size'];
-    //}
-    // $mimeType = mime_content_type($imageData);
-    // $imageData = file_get_contents($imageData);
-    // $imageData = base64_encode($imageData); // Encode the image data to store in the database
-    // $imageSize = $imageSize / 1024; // Convert size to KB
-
-
-
-    // Validate product price
-    if (isset($_POST['product-price']) && is_numeric($_POST['product-price']) && $_POST['product-price'] > 0) {
-        $productPrice = floatval($_POST['product-price']);
-    } else {
-        // Handle invalid price case
-        $errorMessage =  "Invalid product price.";
-        exit;
+    // Check session user
+    if (!isset($_SESSION['userId'])) {
+        $errorMessage = "Error: User not logged in.";
     }
 
-    // Validate postage price
-    if (isset($_POST['product-postage-price']) && is_numeric($_POST['product-postage-price']) && $_POST['product-postage-price'] >= 0) {
-        $productPostagePrice = floatval($_POST['product-postage-price']);
-    } else {
-        // Handle invalid postage price case
-        $errorMessage = "Invalid postage price.";
-        exit;
+    // Validate required fields
+    $requiredFields = ['product-title', 'product-description', 'product-category', 'product-condition', 'product-price', 'product-postage-price', 'product-postage-way'];
+    foreach ($requiredFields as $field) {
+        if (empty($_POST[$field])) {
+            $errorMessage = "Error: Missing or empty field: $field";
+            break;
+        }
     }
-    
 
+    // Proceed only if no errors so far
     if (empty($errorMessage)) {
-        $conn = new mysqli($servername, $username, $password, $dbname); // Create connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
+        // Assign and sanitize inputs
+        $productTitle = trim($_POST['product-title']);
+        $productDescription = trim($_POST['product-description']);
+        $productCategory = trim($_POST['product-category']);
+        $productCondition = trim($_POST['product-condition']);
+        $productPostageWay = trim($_POST['product-postage-way']);
 
-        $productPostage = $productPostagePrice . " - " . $productPostageWay; // Concatenate the two values
-        $userId = $_SESSION['user_id'];
-        $sqlItem = "INSERT INTO iBayItems (`userId`, `title`, `category`, `description`, `price`, `postage`) VALUES (?, ?, ?, ?, ?, ?)";
-        $stmt = $conn->prepare($sqlItem);
+        // Validate numeric fields
+        if (!is_numeric($_POST['product-price']) || $_POST['product-price'] <= 0) {
+            $errorMessage = "Error: Invalid product price.";
+        } elseif (!is_numeric($_POST['product-postage-price']) || $_POST['product-postage-price'] < 0) {
+            $errorMessage = "Error: Invalid postage price.";
+        } else {
+            $productPrice = floatval($_POST['product-price']);
+            $productPostagePrice = floatval($_POST['product-postage-price']);
 
-        if ($stmt) {
-            $stmt->bind_param("ssssds", $userId, $productTitle, $productCategory, $productDescription, $productPrice, $productPostage);
+            // Compose the full description and postage
+            $productPostage = $productPostagePrice . " - " . $productPostageWay;
+            $productFullDescription = $productCondition . " : " . $productDescription;
+            $userId = $_SESSION['userId'];
 
-            if ($stmt->execute()) {
-                $_SESSION['item_added'] = true; // Set session variable to indicate success
-                header("Location: index.php");
-                exit();
-            } 
-            else {
-                $errorMessage = "Error: " . $stmt->error;
+            $conn = new mysqli($servername, $username, $password, $dbname);
+            if ($conn->connect_error) {
+                $errorMessage = "Connection failed: " . $conn->connect_error;
+            } else {
+                $sqlItem = "INSERT INTO iBayItems (`userId`, `title`, `category`, `description`, `price`, `postage`) VALUES (?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sqlItem);
+
+                if ($stmt) {
+                    $stmt->bind_param("ssssds", $userId, $productTitle, $productCategory, $productFullDescription, $productPrice, $productPostage);
+
+                    if ($stmt->execute()) {
+                        $_SESSION['item_added'] = true;
+                        header("Location: index.php");
+                        var_dump([
+                            'Category' => $productCategory,
+                            'Condition' => $productCondition,
+                            'Full Description' => $productFullDescription
+                        ]);
+                        exit();
+                    } else {
+                        $errorMessage = "Error executing query: " . $stmt->error;
+                    }
+
+                    $stmt->close();
+                } else {
+                    $errorMessage = "Prepare failed: " . $conn->error;
+                }
+
+                $conn->close();
             }
-                
         }
-            $stmt->close();
-} 
-else {
-    $errorMessage = "Prepare failed: " . $conn->error;
-}
-
     }
-    
-
-$conn->close(); // Close the connection
-
+}
 
     // $sqlItemImages = "INSERT INTO `iBayImages`(`image`, `mimeType`, `imageSize`, `itemId`) 
     // VALUES (?, ?, ?, ?)";
@@ -135,14 +126,14 @@ $conn->close(); // Close the connection
             <input type="text" id="product-price" name="product-price" required>
 
             <label for="product-category">Product Category:</label>
-            <select id="product-condition" name="product-condition" required>
-                <option value="Brand new">Computing</option>
-                <option value="Used">Electronics</option>
-                <option value="Refurbished">Fashion</option>
-                <option value="Refurbished">Books</option>
-                <option value="Refurbished">Furniture</option>
-                <option value="Refurbished">Toys</option>
-                <option value="Refurbished">Other/Miscellaneous</option>
+            <select id="product-category" name="product-category" required>
+                <option value="Computing">Computing</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Books">Books</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Toys">Toys</option>
+                <option value="Other/Miscellaneous">Other/Miscellaneous</option>
             </select> 
 
             <label for="product-condition">Product Condition:</label>
@@ -188,7 +179,7 @@ $conn->close(); // Close the connection
             <!-- This is the product image end -->
 
             <label for="product-postage-way">Postage Delivery:</label>
-            <select id="product-condition" name="product-condition" required>
+            <select id="product-postage-way" name="product-postage-way" required>
                 <option value="Standard Delivery">Standard Delivery</option>
                 <option value="Economy Delivery">Economy Delivery</option>
             </select> 
