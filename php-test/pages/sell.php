@@ -2,7 +2,11 @@
 // TEST LOGIN INFO, test@test.com, Test123.
 
 session_start(); // Always required at the top
-//var_dump($_SESSION); // Debugging line to check session variables
+#var_dump($_SESSION); // Debugging line to check session variables
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $servername = 'sci-project.lboro.ac.uk';
 $dbname = '295group5';
 $username = '295group5';
@@ -60,13 +64,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt->bind_param("ssssds", $userId, $productTitle, $productCategory, $productFullDescription, $productPrice, $productPostage);
 
                     if ($stmt->execute()) {
+                        $itemId = $stmt->insert_id; // Get the last inserted item ID
+                        if(isset($_FILES['product-images'])) {
+                            $images = $_FILES['product-images'];
+                            foreach ($images['tmp_name'] as $key => $tmpName) {
+                                if ($images['error'][$key] === UPLOAD_ERR_OK) {
+                                    $mimeType = mime_content_type($tmpName);
+                                    $imageSize = filesize($tmpName);
+
+                                    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp']; // Allowed MIME types
+                                    if (!in_array($mimeType, $allowedTypes)) {
+                                        continue; // Skip this file
+                                    }
+
+                                    if ($imageSize > 5 * 1024 * 1024) { // 5MB limit
+                                        continue; // Skip this file
+                                    }
+
+                                    $imageData = file_get_contents($tmpName);
+                                    
+                                    if ($imageData === false) {
+                                        die("Failed to read image data from file: $tmpName");
+                                    }
+
+                                    
+                                    // Insert image into the database
+                                    $sqlItemImages = "INSERT INTO iBayImages2 (`image`, `mimeType`, `imageSize`, `itemId`) VALUES (?, ?, ?, ?)";
+                                    $stmtImages = $conn->prepare($sqlItemImages);
+                                    if ($stmtImages) {
+                                        $stmtImages->bind_param("sssi", $imageData, $mimeType, $imageSize, $itemId);//image data sent another way below
+                                        $stmtImages->execute();
+                                        $stmtImages->close();
+                                        $_SESSION['image_added'] = true; // Set session variable to indicate image was added
+                                    } else {
+                                        $errorMessage = "Prepare failed: " . $conn->error;
+                                    }
+                                }
+                            }
+                        }
                         $_SESSION['item_added'] = true;
                         header("Location: index.php");
-                        var_dump([
-                            'Category' => $productCategory,
-                            'Condition' => $productCondition,
-                            'Full Description' => $productFullDescription
-                        ]);
                         exit();
                     } else {
                         $errorMessage = "Error executing query: " . $stmt->error;
