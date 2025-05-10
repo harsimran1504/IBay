@@ -111,12 +111,13 @@ $item = mysqli_fetch_assoc($result);
                         <hr>
                         <p class="lead"><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
                         
-                        <form action="../includes/add_to_basket.php" method="POST" class="mt-4">
-                            <input type="hidden" name="itemId" value="<?php echo $item['itemId']; ?>">
-                            <button type="submit" class="btn btn-primary btn-lg w-100">
-                                Add to Basket
-                            </button>
-                        </form>
+                        <?php if(isset($_SESSION['user_id'])): ?>
+                            <form action="../includes/add_to_basket.php" method="POST" class="mt-4">
+                                <input type="hidden" name="itemId" value="<?php echo $item['itemId']; ?>">
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    Add to Basket
+                                </button>
+                            </form>
                         <?php else: ?>
                             <a href="basket.php" class="btn btn-outline-primary btn-lg w-100">
                                 Buy
