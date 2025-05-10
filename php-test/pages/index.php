@@ -88,13 +88,16 @@ if (!$conn) {
     <div class="MainContent">
         <div class="Products">
             <?php
-            $sql = "SELECT * FROM iBayItems";
+            $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId";
             $result = mysqli_query($conn, $sql);
             if (mysqli_num_rows($result) > 0) {
                 while($row = mysqli_fetch_assoc($result)) {
                     echo "<a href='product_details.php?id=" . $row['itemId'] . "' class='product-link'>";
                     echo "<div class='product-item'>";
-                    echo "<img src='" . htmlspecialchars($row["image_url"] ?? "placeholder.jpg") . "' alt='Product Image'>";
+                    ;
+                    $imageData = base64_encode($row['image']);
+                    $imageMime = $row['mimeType'];
+                    echo "<img src='data:$imageMime;base64,$imageData' alt='Product Image' class='product-image'>";
                     echo "<div class='product-info'>";
                     echo "<h2>" . htmlspecialchars($row["title"]) . "</h2>";
                     echo "<p>£" . number_format($row["price"], 2) . " + " . htmlspecialchars($row["postage"]) . "</p>";
