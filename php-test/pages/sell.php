@@ -67,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $itemId = $stmt->insert_id; // Get the last inserted item ID
                         if(isset($_FILES['product-images'])) {
                             $images = $_FILES['product-images'];
+
                             foreach ($images['tmp_name'] as $key => $tmpName) {
                                 if ($images['error'][$key] === UPLOAD_ERR_OK) {
                                     $mimeType = mime_content_type($tmpName);
@@ -78,6 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     }
 
                                     if ($imageSize > 5 * 1024 * 1024) { // 5MB limit
+                                        $errorMessage = "Error: File size exceeds 5MB.";
                                         continue; // Skip this file
                                     }
 
@@ -92,7 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     $sqlItemImages = "INSERT INTO iBayImages2 (`image`, `mimeType`, `imageSize`, `itemId`) VALUES (?, ?, ?, ?)";
                                     $stmtImages = $conn->prepare($sqlItemImages);
                                     if ($stmtImages) {
-                                        $stmtImages->bind_param("sssi", $imageData, $mimeType, $imageSize, $itemId);//image data sent another way below
+                                        $stmtImages->bind_param("bssi", $imageData, $mimeType, $imageSize, $itemId);//image data sent another way below
+                                        $stmtImages->send_long_data(0, $imageData); // Send large data
                                         $stmtImages->execute();
                                         $stmtImages->close();
                                         $_SESSION['image_added'] = true; // Set session variable to indicate image was added
