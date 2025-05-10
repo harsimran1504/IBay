@@ -139,8 +139,8 @@ a { text-decoration: none; color: inherit; }
 }
 
 .MainContent .Products {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--gap-lg);
   padding: var(--gap-lg);
 }
@@ -150,7 +150,9 @@ a { text-decoration: none; color: inherit; }
   border-radius: var(--radius-lg);
   padding: var(--gap-lg);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   align-items: center;
   gap: var(--gap-lg);
   transition: var(--transition);
@@ -164,11 +166,13 @@ a { text-decoration: none; color: inherit; }
   height: 150px;
   object-fit: cover;
   border-radius: var(--radius-md);
+  margin-bottom: var(--gap-md);
 }
 .product-info {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  align-items: center;
 }
 .product-item h2 {
   font-size: var(--fs-lg);
