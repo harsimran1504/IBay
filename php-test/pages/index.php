@@ -92,6 +92,7 @@ if (!$conn) {
             $result = mysqli_query($conn, $sql);
             if (mysqli_num_rows($result) > 0) {
                 while($row = mysqli_fetch_assoc($result)) {
+                    echo "<a href='product_details.php?id=" . $row['itemId'] . "' class='product-link'>";
                     echo "<div class='product-item'>";
                     echo "<img src='" . htmlspecialchars($row["image_url"] ?? "placeholder.jpg") . "' alt='Product Image'>";
                     echo "<div class='product-info'>";
