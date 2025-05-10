@@ -15,7 +15,11 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     exit();
 }
 
-$stmt = mysqli_prepare($conn, "SELECT * FROM iBayItems WHERE itemId = ?");
+$stmt = mysqli_prepare($conn, "SELECT iBayItems.*, iBayImages2.image, iBayImages2.mimeType 
+                              FROM iBayItems 
+                              LEFT JOIN iBayImages2 
+                              ON iBayItems.itemId = iBayImages2.itemId 
+                              WHERE iBayItems.itemId = ?");
 mysqli_stmt_bind_param($stmt, "i", $_GET['id']);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
@@ -99,9 +103,17 @@ $item = mysqli_fetch_assoc($result);
         <div class="product-details container mt-4">
             <div class="row">
                 <div class="col-md-6">
-                    <img src="<?php echo htmlspecialchars($item['image_url'] ?? 'placeholder.jpg'); ?>" 
-                         class="img-fluid rounded-3" 
-                         alt="Product Image">
+                     <?php if(!empty($item['image'])): ?>
+                        <?php
+                        $imageData = base64_encode($item['image']);
+                        $imageMime = $item['mimeType'];
+                        ?>
+                        <img src="data:<?php echo $imageMime; ?>;base64,<?php echo $imageData; ?>" 
+                            class="img-fluid rounded-3" 
+                            alt="Product Image">
+                    <?php else: ?>
+                        <img src="placeholder.jpg" class="img-fluid rounded-3" alt="Product Image">
+                    <?php endif; ?>
                 </div>
                 <div class="col-md-6">
                     <h1 class="mb-4"><?php echo htmlspecialchars($item['title']); ?></h1>
