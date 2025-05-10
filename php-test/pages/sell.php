@@ -72,9 +72,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 if ($images['error'][$key] === UPLOAD_ERR_OK) {
                                     $mimeType = mime_content_type($tmpName);
                                     $imageSize = filesize($tmpName);
+                                    
+                                    echo "<p>Image $key - Type: $mimeType, Size: $imageSize bytes</p>";
 
                                     $allowedTypes = ['image/jpeg', 'image/png', 'image/webp']; // Allowed MIME types
                                     if (!in_array($mimeType, $allowedTypes)) {
+                                        error_log("Image $key skipped: invalid MIME type $mimeType");
                                         continue; // Skip this file
                                     }
 
@@ -268,7 +271,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Drag and Drop Functionality -->
     <script>
         const dropArea = document.getElementById("drop-area");
-        const fileInput = document.getElementById("product-images");
+        const fileInput1 = document.getElementById("product-images");
 
         // Highlight drop area when item is dragged over it
         ["dragenter", "dragover"].forEach(eventName => {

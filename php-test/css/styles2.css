@@ -140,18 +140,22 @@ a { text-decoration: none; color: inherit; }
 }
 
 .MainContent .Products {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: var(--gap-lg);
   padding: var(--gap-lg);
+  justify-items: center;
 }
+
 .product-item {
   background: #fff;
   border: 1px solid #E5E7EB;
   border-radius: var(--radius-lg);
   padding: var(--gap-lg);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
   align-items: center;
   gap: var(--gap-lg);
   transition: var(--transition);
@@ -165,11 +169,13 @@ a { text-decoration: none; color: inherit; }
   height: 150px;
   object-fit: cover;
   border-radius: var(--radius-md);
+  margin-bottom: var(--gap-md);
 }
 .product-info {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  align-items: center;
 }
 .product-item h2 {
   font-size: var(--fs-lg);
@@ -178,6 +184,55 @@ a { text-decoration: none; color: inherit; }
 .product-item p {
   font-size: var(--fs-base);
   color: var(--text-900);
+}
+.product-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.product-item {
+    transition: transform 0.2s ease;
+}
+
+.product-item:hover {
+    transform: translateY(-5px);
+    cursor: pointer;
+}
+.product-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--gap-lg);
+    padding: var(--gap-lg);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.detail-images img {
+    width: 100%;
+    max-width: 500px;
+    border-radius: var(--radius-lg);
+}
+
+.detail-info {
+    background: white;
+    padding: var(--gap-lg);
+    border-radius: var(--radius-lg);
+}
+
+.add-to-basket {
+    background: var(--primary-500);
+    color: white;
+    border: none;
+    padding: var(--gap-md);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: var(--fw-semibold);
+    transition: var(--transition);
+}
+
+.add-to-basket:hover {
+    background: var(--primary-700);
 }
 
 footer .footer {
