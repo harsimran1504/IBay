@@ -31,7 +31,7 @@ if (mysqli_num_rows($result) === 0) {
 
 $item = mysqli_fetch_assoc($result);
 
-array_push($_SESSION['basket'], $item['itemId']);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -125,10 +125,9 @@ array_push($_SESSION['basket'], $item['itemId']);
                         <hr>
                         <p class="lead"><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
                         
-                        <?php if(isset($_SESSION['user_id'])): ?>
+                        <?php if(isset($_SESSION['name'])): ?>
                             <form action="basket.php" method="POST" class="mt-4">
                                 <input type="hidden" name="itemId" value="<?php echo $item['itemId']; ?>">
-                                <?php echo $item['itemId']; ?>
                                 <button type="submit" class="btn btn-primary btn-lg w-100">
                                     Add to Basket
                                 </button>

@@ -1,6 +1,8 @@
 <?php
 session_start();
 
+array_push($_SESSION['basket'], $_POST['itemId']);
+
 ?>
 
 
@@ -30,7 +32,7 @@ session_start();
         <?php unset($_SESSION['item_added']); ?>
     <?php endif; ?>
 
-    <div class="Title-SearchBar">
+        <div class="Title-SearchBar">
         <header> 
             <h1>Ibay</h1>
         </header>
@@ -56,6 +58,24 @@ session_start();
                 <?php endif; ?>
             </div>
         </div>
+    </div>
+
+    <div class="Divider"> 
+        <hr class="solid">
+    </div>
+
+    <div class="NavButtons">
+        <nav>
+            <ul>
+                <li><a href="index.php">Home</a></li>
+                <li><a href="category.php?category=Electronic">Electronics</a></li>
+                <li><a href="category.php?category=Clothing">Fashion</a></li>
+                <li><a href="category.php?category=Book">Books</a></li>
+                <li><a href="category.php?category=Furniture">Furniture</a></li>
+                <li><a href="category.php?category=Toy">Toys</a></li>
+                <li><a href="category.php?category=Miscellaneous">Miscellaneous</a></li>
+            </ul>
+        </nav>
     </div>
 
     <div class="Divider"> 
