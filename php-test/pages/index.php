@@ -3,6 +3,7 @@
 // TEST LOGIN INFO, test@test.com, Test123.
 
 session_start(); // Start the session
+$_SESSION["basket"] = array(); 
 $servername = 'sci-project.lboro.ac.uk';
 $dbname = '295group5';
 $username = '295group5';
