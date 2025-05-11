@@ -3,6 +3,16 @@ session_start();
 
 array_push($_SESSION['basket'], $_POST['itemId']);
 
+$servername = 'sci-project.lboro.ac.uk';
+$dbname = '295group5';
+$username = '295group5';
+$password = 'becvUgUxpXMijnWviR7h';
+
+$conn = mysqli_connect($servername, $username, $password, $dbname);
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
 ?>
 
 
@@ -87,12 +97,69 @@ array_push($_SESSION['basket'], $_POST['itemId']);
         <div class="basket-items-list">
             <?php
             echo '<h3>Your Basket Items:</h3>';
-            foreach ($_SESSION['basket'] as $item) {
-                echo '<p>' . htmlspecialchars($item) . '</p>';
+            foreach ($_SESSION['basket'] as $itemId) {
+                $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId
+                        WHERE iBayItems.itemId = '$itemId'";
+                $result = mysqli_query($conn, $sql);
+                $item = mysqli_fetch_assoc($result);
+                echo '<p>' . htmlspecialchars($item["title"]) . '</p>';
             }
-         
             ?>
         </div>
     </div>
+    <div class="Price">
+        <h3>Subtotal: 
+            <?php
+            $subtotal = 0;
+            foreach ($_SESSION['basket'] as $itemId) {
+                $sql = "SELECT price FROM iBayItems WHERE itemId = '$itemId'";
+                $result = mysqli_query($conn, $sql);
+                $item = mysqli_fetch_assoc($result);
+                $subtotal += $item['price'];
+            }
+            echo '£' . number_format($subtotal, 2);
+            ?>
+        </h3>
+        <h3>Postage: 
+            <?php
+            $postage = 0;
+            foreach ($_SESSION['basket'] as $itemId) {
+                $sql = "SELECT postage FROM iBayItems WHERE itemId = '$itemId'";
+                $result = mysqli_query($conn, $sql);
+                $item = mysqli_fetch_assoc($result);
+                $itemPostage = preg_replace("/[^0-9\.]/", '', $item['postage']);
+                $itemPostage = floatval($itemPostage);
+                $itemPostage = round($itemPostage, 2);
+                $postage += $itemPostage;
+            }
+            echo '£' . number_format($postage, 2);
+            ?>
+        </h3>
+        <h3>Total: 
+            <?php
+            $total = $subtotal + $postage;
+            echo '£' . number_format($total, 2);
+            ?>
+        </h3>
+    </div>
+
+    <div class="Basket-Buttons">
+        <form action="checkout.php" method="POST">
+            <button type="submit" class="btn btn-primary">Checkout</button>
+        </form>
+        <button type="submit" class="btn btn-danger" onclick="clearBasket()">Clear Basket</button>
+
+    </div>
+        
+
+
+    <script>
+        function clearBasket() {
+            <?php
+            $_SESSION['basket'] = array();
+            ?>
+            location.reload();
+        }
+    </script>
 
 </body>
