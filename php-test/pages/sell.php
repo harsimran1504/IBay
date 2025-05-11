@@ -65,51 +65,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     if ($stmt->execute()) {
                         $itemId = $stmt->insert_id; // Get the last inserted item ID
-                        if(isset($_FILES['product-images'])) {
+                        if (isset($_FILES['product-images'])) {
                             $images = $_FILES['product-images'];
 
-                            foreach ($images['tmp_name'] as $key => $tmpName) {
-                                if ($images['error'][$key] === UPLOAD_ERR_OK) {
-                                    $mimeType = mime_content_type($tmpName);
-                                    $imageSize = filesize($tmpName);
-                                    
-                                    echo "<p>Image $key - Type: $mimeType, Size: $imageSize bytes</p>";
+                            
+                            $sqlItemImages = "INSERT INTO iBayImages2 (`image`, `mimeType`, `imageSize`, `itemId`) VALUES (?, ?, ?, ?)";
+                            $stmtImages = $conn->prepare($sqlItemImages);
+                            if (!$stmtImages) {
+                                $errorMessage = "Prepare failed: " . $conn->error;
+                            } 
+                            else {
+                                for ($key = 0; $key < count($images['tmp_name']); $key++) {
+                                    if ($images['error'][$key] === UPLOAD_ERR_OK) {
+                                        $tmpName = $images['tmp_name'][$key];
+                                        $mimeType = mime_content_type($tmpName);
+                                        $imageSize = filesize($tmpName);
 
-                                    $allowedTypes = ['image/jpeg', 'image/png', 'image/webp']; // Allowed MIME types
-                                    if (!in_array($mimeType, $allowedTypes)) {
-                                        error_log("Image $key skipped: invalid MIME type $mimeType");
-                                        continue; // Skip this file
-                                    }
+                                        echo "<p>Image $key - Type: $mimeType, Size: $imageSize bytes</p>";
 
-                                    if ($imageSize > 5 * 1024 * 1024) { // 5MB limit
-                                        $errorMessage = "Error: File size exceeds 5MB.";
-                                        continue; // Skip this file
-                                    }
+                                        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                                        if (!in_array($mimeType, $allowedTypes)) {
+                                            error_log("Image $key skipped: invalid MIME type $mimeType");
+                                            continue;
+                                        }
 
-                                    $imageData = file_get_contents($tmpName);
-                                    
-                                    if ($imageData === false) {
-                                        die("Failed to read image data from file: $tmpName");
-                                    }
+                                        if ($imageSize > 5 * 1024 * 1024) {
+                                            $errorMessage = "Error: File size exceeds 5MB.";
+                                            continue;
+                                        }
 
-                                    
-                                    // Insert image into the database
-                                    $sqlItemImages = "INSERT INTO iBayImages2 (`image`, `mimeType`, `imageSize`, `itemId`) VALUES (?, ?, ?, ?)";
-                                    $stmtImages = $conn->prepare($sqlItemImages);
-                                    if ($stmtImages) {
-                                        $stmtImages->bind_param("bssi", $imageData, $mimeType, $imageSize, $itemId);//image data sent another way below
-                                        $stmtImages->send_long_data(0, $imageData); // Send large data
+                                        $imageData = file_get_contents($tmpName);
+                                        if ($imageData === false) {
+                                            error_log("Failed to read image data from file: $tmpName");
+                                            continue;
+                                        }
+
+                                        $null = NULL;
+                                        $stmtImages->bind_param("bssi", $null, $mimeType, $imageSize, $itemId);
+                                        $stmtImages->send_long_data(0, $imageData);
                                         $stmtImages->execute();
-                                        $stmtImages->close();
-                                        $_SESSION['image_added'] = true; // Set session variable to indicate image was added
-                                    } else {
-                                        $errorMessage = "Prepare failed: " . $conn->error;
                                     }
                                 }
+                                $stmtImages->close();
+                                $_SESSION['image_added'] = true;
                             }
                         }
                         $_SESSION['item_added'] = true;
                         header("Location: index.php");
+
+                        echo "<pre>";
+                        print_r($_FILES['product-images']);
+                        echo "</pre>";
+                        
                         exit();
                     } else {
                         $errorMessage = "Error executing query: " . $stmt->error;
