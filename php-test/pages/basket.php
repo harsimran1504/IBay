@@ -1,7 +1,31 @@
 <?php
 session_start();
 
-array_push($_SESSION['basket'], $_POST['itemId']);
+// Initialize the basket if it doesn't exist
+if (!isset($_SESSION['basket'])) {
+    $_SESSION['basket'] = [];
+}
+
+// Add item to the basket
+if (isset($_POST['itemId'])) {
+    $itemId = $_POST['itemId'];
+
+    // Avoid duplicate items in the basket
+    if (!in_array($itemId, $_SESSION['basket'])) {
+        $_SESSION['basket'][] = $itemId;
+    }
+
+    // Redirect back to the product page or basket
+    header("Location: basket.php");
+    exit();
+}
+
+// Clear the basket
+if (isset($_POST['clearBasket'])) {
+    $_SESSION['basket'] = [];
+    header("Location: basket.php");
+    exit();
+}
 
 $servername = 'sci-project.lboro.ac.uk';
 $dbname = '295group5';
@@ -95,16 +119,44 @@ if (!$conn) {
     <div class="Basket-Items">
         <h2>Basket</h2>
         <div class="basket-items-list">
-            <?php
-            echo '<h3>Your Basket Items:</h3>';
-            foreach ($_SESSION['basket'] as $itemId) {
-                $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId
-                        WHERE iBayItems.itemId = '$itemId'";
-                $result = mysqli_query($conn, $sql);
-                $item = mysqli_fetch_assoc($result);
-                echo '<p>' . htmlspecialchars($item["title"]) . '</p>';
-            }
-            ?>
+            <table>
+                
+                <thead>
+                    <tr>
+                        <th>Item ID</th>
+                        <th>Title</th>
+                        <th>Price</th>
+                        <th>Postage</th>
+                        <th>Image</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    foreach ($_SESSION['basket'] as $itemId) {
+                        $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId
+                                WHERE iBayItems.itemId = '$itemId'";
+                        $result = mysqli_query($conn, $sql);
+                        if (mysqli_num_rows($result) > 0) {
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<tr>";
+                                echo "<td>" . htmlspecialchars($row['itemId']) . "</td>";
+                                echo "<td>" . htmlspecialchars($row['title']) . "</td>";
+                                echo "<td>£" . number_format($row['price'], 2) . "</td>";
+                                echo "<td>£" . htmlspecialchars($row['postage']) . "</td>";
+                                if (!empty($row['image'])) {
+                                    $imageData = base64_encode($row['image']);
+                                    $imageMime = $row['mimeType'];
+                                    echo "<td><img src='data:$imageMime;base64,$imageData' class='img-fluid' alt='Product Image'></td>";
+                                } else {
+                                    echo "<td>No Image</td>";
+                                }
+                                echo "</tr>";
+                            }
+                        }
+                    }
+                    ?>
+                </tbody>
+            </table>
         </div>
     </div>
     <div class="Price">
@@ -147,19 +199,9 @@ if (!$conn) {
         <form action="checkout.php" method="POST">
             <button type="submit" class="btn btn-primary">Checkout</button>
         </form>
-        <button type="submit" class="btn btn-danger" onclick="clearBasket()">Clear Basket</button>
-
+        <form method="POST">
+            <button type="submit" name="clearBasket" class="btn btn-danger">Clear Basket</button>
+        </form>
     </div>
-        
-
-
-    <script>
-        function clearBasket() {
-            <?php
-            $_SESSION['basket'] = array();
-            ?>
-            location.reload();
-        }
-    </script>
-
 </body>
+</html>
