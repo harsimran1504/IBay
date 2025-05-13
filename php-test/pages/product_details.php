@@ -133,8 +133,8 @@ $item = mysqli_fetch_assoc($result);
                                 </button>
                             </form>
                         <?php else: ?>
-                            <a href="basket.php" class="btn btn-outline-primary btn-lg w-100">
-                                Buy <!--Change to prompt login to buy-->
+                            <a href="login.php" class="btn btn-outline-primary btn-lg w-100">
+                                Login to Add to Basket
                             </a>
                         <?php endif; ?>
                     </div>
