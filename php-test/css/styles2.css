@@ -247,3 +247,15 @@ footer .footer a { color: var(--primary-500); }
 .alert {
   margin: var(--gap-md) var(--gap-lg);
 }
+
+.advanced-link {
+        color: var(--text-500);
+        transition: all 0.2s ease;
+        transform: translateY(8px); 
+    }
+    
+.advanced-link:hover {
+        color: var(--primary-500) !important;
+        /* Optional: Add underline on hover */
+        text-decoration: underline !important;
+}
