@@ -102,12 +102,24 @@ if (!$conn) {
 
         <div class="Products" id = "products-container">
             <?php
-            $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId";
+            $sort = $_GET['sort'] ?? '';
+
+            $orderBy = "iBayItems.itemId DESC"; // Default: newest
+            if ($sort === 'price_asc') {
+                $orderBy = "iBayItems.price ASC";
+            } elseif ($sort === 'price_desc') {
+                $orderBy = "iBayItems.price DESC";
+            }
+
+            $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId
+                    WHERE iBayItems.finish = '0000-00-00 00:00:00'
+                    ORDER BY $orderBy";
+
             $result = mysqli_query($conn, $sql);
+            $displayed = [];
             if (mysqli_num_rows($result) > 0) {
-                $displayed = [];
                 while($row = mysqli_fetch_assoc($result)) {
-                    if ($row['finish'] == '0000-00-00 00:00:00' && !in_array($row['itemId'], $displayed)) {
+                    if (!in_array($row['itemId'], $displayed)) {
                         $displayed[] = $row['itemId'];
                         echo "<a href='product_details.php?id=" . $row['itemId'] . "' class='product-link'>";
                         echo "<div class='product-item'>";
@@ -119,7 +131,7 @@ if (!$conn) {
                         echo "<p>£" . number_format($row["price"], 2) . " + " . htmlspecialchars($row["postage"]) . "</p>";
                         echo "</div></div>";
                         echo "</a>";
-                    } 
+                    }
                 }
             } else {
                 echo "<p>No items found.</p>";
@@ -288,6 +300,17 @@ if (!$conn) {
         });
     </script>
 
+    <script>
+    $(document).ready(function() {
+        $('#sortSelect').on('change', function() {
+            const sort = $(this).val();
+            const query = $('#searchInput').val();
+            $.get('sort_products.php', { sort: sort, query: query }, function(html) {
+                $('#products-container').html(html);
+            });
+        });
+    });
+    </script>
 
     <!-- Advanced Search Modal -->
     <div class="modal fade" id="advancedSearchModal" tabindex="-1">
