@@ -1,28 +1,29 @@
 
-:root {  /* ALL HTML ELEMENTS */
-  --primary-500: #002853;
+:root {  /* ALL HTML ELEMENTS SET COLOURS AND DEFAULT PARAM */
+  --primary-500: #002853; /* Primary colour */
   --primary-700: #004A9F;
   --accent-500: #FF6A00;
-  --bg-100: #F9FAFB;
+  --bg-100: #F9FAFB; /* Background colour */
   --bg-900: #1F2937;
-  --text-900: #111827;
+  --text-900: #111827; /* Text colour */
   --text-500: #6B7280;
 
-  --gap-sm: 0.5rem;
+  --gap-sm: 0.5rem;/* Dif size gap - padding */
   --gap-md: 1rem;
   --gap-lg: 1.5rem;
 
-  --radius-sm: 0.25rem;
+  --radius-sm: 0.25rem;/* Dif size radius - border,margin */
   --radius-md: 0.5rem;
   --radius-lg: 1rem;
 
-  --font-sans: 'Inter', sans-serif;
+  --font-sans: 'Inter', sans-serif; /* Font family */
   --fs-base: 1rem;
   --fs-lg: 1.125rem;
   --fs-xl: 1.25rem;
   --fw-normal: 400;
   --fw-semibold: 600;
-  --transition: all 0.3s ease;
+
+  --transition: all 0.3s ease; /* Transition for effect */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -39,7 +40,6 @@ a { text-decoration: none; color: inherit; }
   justify-content: space-between;
   align-items: center;
 }
-
 
 .profile-dropdown {
   position: relative;
@@ -196,11 +196,11 @@ a { text-decoration: none; color: inherit; }
 }
 
 .product-item:hover {
-    transform: translateY(-5px);
+    transform: translateY(-5px); /* Slightly lift the product item on hover */
     cursor: pointer;
 }
 .product-details {
-    display: grid;
+    display: grid; /* Grid layout for product details CHANGE IF WANT ROW */
     grid-template-columns: 1fr 1fr;
     gap: var(--gap-lg);
     padding: var(--gap-lg);
