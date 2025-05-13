@@ -76,14 +76,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             } 
                             else {
                                 for ($key = 0; $key < count($images['tmp_name']); $key++) {
-                                    if ($images['error'][$key] === UPLOAD_ERR_OK) {
+                                    if ($images['error'][$key] === UPLOAD_ERR_OK) { // Check for upload errors
                                         $tmpName = $images['tmp_name'][$key];
                                         $mimeType = mime_content_type($tmpName);
                                         $imageSize = filesize($tmpName);
 
-                                        echo "<p>Image $key - Type: $mimeType, Size: $imageSize bytes</p>";
-
-                                        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+                                        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp']; //checks for image
                                         if (!in_array($mimeType, $allowedTypes)) {
                                             error_log("Image $key skipped: invalid MIME type $mimeType");
                                             continue;
@@ -116,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         echo "<pre>";
                         print_r($_FILES['product-images']);
                         echo "</pre>";
-                        
+
                         exit();
                     } else {
                         $errorMessage = "Error executing query: " . $stmt->error;
@@ -180,7 +178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <option value="Computing">Computing</option>
                 <option value="Electronics">Electronics</option>
                 <option value="Fashion">Fashion</option>
-                <option value="Books">Books</option>
+                <option value="Book">Book</option>
                 <option value="Furniture">Furniture</option>
                 <option value="Toys">Toys</option>
                 <option value="Other/Miscellaneous">Other/Miscellaneous</option>
