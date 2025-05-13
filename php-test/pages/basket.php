@@ -116,92 +116,112 @@ if (!$conn) {
         <hr class="solid">
     </div>
 
-    <div class="Basket-Items">
-        <h2>Basket</h2>
-        <div class="basket-items-list">
-            <table>
-                
-                <thead>
-                    <tr>
-                        <th>Item ID</th>
-                        <th>Title</th>
-                        <th>Price</th>
-                        <th>Postage</th>
-                        <th>Image</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    foreach ($_SESSION['basket'] as $itemId) {
-                        $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId
-                                WHERE iBayItems.itemId = '$itemId'";
-                        $result = mysqli_query($conn, $sql);
-                        if (mysqli_num_rows($result) > 0) {
-                            while ($row = mysqli_fetch_assoc($result)) {
-                                echo "<tr>";
-                                echo "<td>" . htmlspecialchars($row['itemId']) . "</td>";
-                                echo "<td>" . htmlspecialchars($row['title']) . "</td>";
-                                echo "<td>£" . number_format($row['price'], 2) . "</td>";
-                                echo "<td>£" . htmlspecialchars($row['postage']) . "</td>";
-                                if (!empty($row['image'])) {
-                                    $imageData = base64_encode($row['image']);
-                                    $imageMime = $row['mimeType'];
-                                    echo "<td><img src='data:$imageMime;base64,$imageData' class='img-fluid' alt='Product Image'></td>";
-                                } else {
-                                    echo "<td>No Image</td>";
+    <div class="Basket-Items container my-5">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Basket</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive mb-4">
+                    <table class="table table-striped align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Item ID</th>
+                                <th>Title</th>
+                                <th>Price</th>
+                                <th>Postage</th>
+                                <th>Image</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                            foreach ($_SESSION['basket'] as $itemId) {
+                                $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId
+                                        WHERE iBayItems.itemId = '$itemId'";
+                                $result = mysqli_query($conn, $sql);
+                                if (mysqli_num_rows($result) > 0) {
+                                    while ($row = mysqli_fetch_assoc($result)) {
+                                        echo "<tr>";
+                                        echo "<td>" . htmlspecialchars($row['itemId']) . "</td>";
+                                        echo "<td>" . htmlspecialchars($row['title']) . "</td>";
+                                        echo "<td>£" . number_format($row['price'], 2) . "</td>";
+                                        echo "<td>£" . htmlspecialchars($row['postage']) . "</td>";
+                                        if (!empty($row['image'])) {
+                                            $imageData = base64_encode($row['image']);
+                                            $imageMime = $row['mimeType'];
+                                            echo "<td><img src='data:$imageMime;base64,$imageData' class='img-thumbnail' style='max-width:80px;max-height:80px;' alt='Product Image'></td>";
+                                        } else {
+                                            echo "<td><span class='text-muted'>No Image</span></td>";
+                                        }
+                                        echo "</tr>";
+                                        break; // Only show one row per item
+                                    }
                                 }
-                                echo "</tr>";
                             }
-                        }
-                    }
-                    ?>
-                </tbody>
-            </table>
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 bg-light">
+                            <h5>Subtotal:</h5>
+                            <p class="fs-5 mb-0">
+                                <?php
+                                $subtotal = 0;
+                                foreach ($_SESSION['basket'] as $itemId) {
+                                    $sql = "SELECT price FROM iBayItems WHERE itemId = '$itemId'";
+                                    $result = mysqli_query($conn, $sql);
+                                    $item = mysqli_fetch_assoc($result);
+                                    $subtotal += $item['price'];
+                                }
+                                echo '£' . number_format($subtotal, 2);
+                                ?>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 bg-light">
+                            <h5>Postage:</h5>
+                            <p class="fs-5 mb-0">
+                                <?php
+                                $postage = 0;
+                                foreach ($_SESSION['basket'] as $itemId) {
+                                    $sql = "SELECT postage FROM iBayItems WHERE itemId = '$itemId'";
+                                    $result = mysqli_query($conn, $sql);
+                                    $item = mysqli_fetch_assoc($result);
+                                    $itemPostage = preg_replace("/[^0-9\.]/", '', $item['postage']);
+                                    $itemPostage = floatval($itemPostage);
+                                    $itemPostage = round($itemPostage, 2);
+                                    $postage += $itemPostage;
+                                }
+                                echo '£' . number_format($postage, 2);
+                                ?>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 bg-light">
+                            <h5>Total:</h5>
+                            <p class="fs-4 fw-bold mb-0">
+                                <?php
+                                $total = $subtotal + $postage;
+                                echo '£' . number_format($total, 2);
+                                ?>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end gap-2">
+                    <form action="checkout.php" method="POST" class="me-2">
+                        <button type="submit" class="btn btn-success btn-lg">Checkout</button>
+                    </form>
+                    <form method="POST">
+                        <button type="submit" name="clearBasket" class="btn btn-outline-danger btn-lg">Clear Basket</button>
+                    </form>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="Price">
-        <h3>Subtotal: 
-            <?php
-            $subtotal = 0;
-            foreach ($_SESSION['basket'] as $itemId) {
-                $sql = "SELECT price FROM iBayItems WHERE itemId = '$itemId'";
-                $result = mysqli_query($conn, $sql);
-                $item = mysqli_fetch_assoc($result);
-                $subtotal += $item['price'];
-            }
-            echo '£' . number_format($subtotal, 2);
-            ?>
-        </h3>
-        <h3>Postage: 
-            <?php
-            $postage = 0;
-            foreach ($_SESSION['basket'] as $itemId) {
-                $sql = "SELECT postage FROM iBayItems WHERE itemId = '$itemId'";
-                $result = mysqli_query($conn, $sql);
-                $item = mysqli_fetch_assoc($result);
-                $itemPostage = preg_replace("/[^0-9\.]/", '', $item['postage']);
-                $itemPostage = floatval($itemPostage);
-                $itemPostage = round($itemPostage, 2);
-                $postage += $itemPostage;
-            }
-            echo '£' . number_format($postage, 2);
-            ?>
-        </h3>
-        <h3>Total: 
-            <?php
-            $total = $subtotal + $postage;
-            echo '£' . number_format($total, 2);
-            ?>
-        </h3>
-    </div>
-
-    <div class="Basket-Buttons">
-        <form action="checkout.php" method="POST">
-            <button type="submit" class="btn btn-primary">Checkout</button>
-        </form>
-        <form method="POST">
-            <button type="submit" name="clearBasket" class="btn btn-danger">Clear Basket</button>
-        </form>
     </div>
 </body>
 </html>
