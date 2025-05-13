@@ -274,3 +274,20 @@ footer .footer a { color: var(--primary-500); }
     width: 3rem;
     height: 3rem;
 }
+
+.sort-bar {
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sort-bar .form-label {
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.form-select {
+    max-width: 200px;
+}

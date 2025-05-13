@@ -47,9 +47,9 @@ if (!$conn) {
         <header> 
             <h1>Ibay</h1>
         </header>
-        <form action="search.php" method="GET">
-            <input type="text" name="query" placeholder="Search for any item" aria-label="Search">
-            <button class="btn btn-primary">Search</button>
+        <form id="searchForm" class="d-flex">
+            <input type="text" name="query" id="searchInput" class="form-control me-2" placeholder="Search for any item">
+            <button type="submit" class="btn btn-primary">Search</button>
             <a href="advanced_search.php" class="text-decoration-none ms-2 advanced-link" data-bs-toggle="modal" data-bs-target="#advancedSearchModal">Advanced</a>
         </form>
 
@@ -91,6 +91,15 @@ if (!$conn) {
     </div>
 
     <div class="MainContent">
+        <div class="sort-bar mb-3">
+        <label for="sortSelect" class="form-label">Sort by:</label>
+        <select id="sortSelect" class="form-select" style="width:auto; display:inline-block;">
+            <option value="">Default (Newest)</option>
+            <option value="price_asc">Price: Low to High</option>
+            <option value="price_desc">Price: High to Low</option>
+        </select>
+        </div>
+
         <div class="Products" id = "products-container">
             <?php
             $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId";
@@ -223,6 +232,60 @@ if (!$conn) {
         loadCategory(cat);
     });
     });
+
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', ()=>{
+        const form = document.getElementById('searchForm');
+        const input = document.getElementById('searchInput');
+        const container = document.getElementById('products-container');
+
+        async function doSearch(query) {
+            // update URL
+            const params = new URLSearchParams({query});
+            history.pushState({query}, '', '?' + params.toString());
+
+            // loading indicator
+            container.innerHTML = `
+            <div class="loading-spinner text-center my-5">
+                <div class="spinner-border"></div>
+                <p>Searching...</p>
+            </div>
+            `;
+
+            try {
+            const res = await fetch(`search1.php?query=${encodeURIComponent(query)}`);
+            if (!res.ok) throw new Error(res.statusText);
+            const html = await res.text();
+            container.innerHTML = html;
+            } catch (err) {
+            console.error(err);
+            container.innerHTML = `<div class="alert alert-danger">Error during search.</div>`;
+            }
+        }
+
+        // Intercept form submit
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            const q = input.value.trim();
+            doSearch(q);
+        });
+
+        // Handle back/forward
+        window.addEventListener('popstate', e => {
+            const q = e.state?.query || '';
+            input.value = q;
+            doSearch(q);
+        });
+
+        // If ?query= present on initial load
+        const initQ = new URLSearchParams(window.location.search).get('query');
+        if (initQ) {
+            input.value = initQ;
+            doSearch(initQ);
+        }
+        });
     </script>
 
 
