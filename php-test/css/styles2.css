@@ -259,3 +259,18 @@ footer .footer a { color: var(--primary-500); }
         /* Optional: Add underline on hover */
         text-decoration: underline !important;
 }
+
+.modal-content {
+    border-radius: var(--radius-lg);
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-500);
+}
+
+.loading-spinner .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}

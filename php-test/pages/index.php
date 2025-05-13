@@ -24,6 +24,7 @@ if (!$conn) {
     <title>Homepage</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/styles2.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 </head>
 <body>
     <?php if (isset($_SESSION['logout_msg'])) :?>
@@ -49,7 +50,7 @@ if (!$conn) {
         <form action="search.php" method="GET">
             <input type="text" name="query" placeholder="Search for any item" aria-label="Search">
             <button class="btn btn-primary">Search</button>
-            <a href="advanced_search.php" class="text-decoration-none ms-2 advanced-link">Advanced</a>
+            <a href="advanced_search.php" class="text-decoration-none ms-2 advanced-link" data-bs-toggle="modal" data-bs-target="#advancedSearchModal">Advanced</a>
         </form>
 
         <div class="profile-dropdown">
@@ -78,19 +79,19 @@ if (!$conn) {
     <div class="NavButtons">
         <nav>
             <ul>
-                <li><a href="index.php">Home</a></li>
-                <li><a href="category.php?category=Electronic">Electronics</a></li>
-                <li><a href="category.php?category=Clothing">Fashion</a></li>
-                <li><a href="category.php?category=Book">Books</a></li>
-                <li><a href="category.php?category=Furniture">Furniture</a></li>
-                <li><a href="category.php?category=Toy">Toys</a></li>
-                <li><a href="category.php?category=Miscellaneous">Miscellaneous</a></li>
+                <li><a href="#" data-category="">Home</a></li>
+                <li><a href="#" data-category="Electronics">Electronics</a></li>
+                <li><a href="#" data-category="clothing">Fashion</a></li>
+                <li><a href="#" data-category="Book">Books</a></li>
+                <li><a href="#" data-category="Furniture">Furniture</a></li>
+                <li><a href="#" data-category="Toy">Toys</a></li>
+                <li><a href="#" data-category="Miscellaneous">Miscellaneous</a></li>
             </ul>
         </nav>
     </div>
 
     <div class="MainContent">
-        <div class="Products">
+        <div class="Products" id = "products-container">
             <?php
             $sql = "SELECT * FROM iBayItems LEFT JOIN iBayImages2 ON iBayItems.itemId = iBayImages2.itemId";
             $result = mysqli_query($conn, $sql);
@@ -142,6 +143,133 @@ if (!$conn) {
             }, 5000);
         }
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const productsContainer = document.querySelector('.Products');
+    const searchForm = document.getElementById('advancedSearchForm');
+    const applyBtn = document.getElementById('applyFilters');
+
+    applyBtn.addEventListener('click', function() {
+        const formData = new FormData(searchForm);
+        const params = new URLSearchParams(formData);
+        
+        loadAdvancedResults(params);
+        $('#advancedSearchModal').modal('hide');
+    });
+
+        async function loadAdvancedResults(params) {
+            try {
+                productsContainer.innerHTML = `
+                    <div class="loading-spinner">
+                        <div class="spinner-border text-primary"></div>
+                        <p>Loading results...</p>
+                    </div>
+                `;
+
+                const response = await fetch(`advanced_search.php?${params}`);
+                const html = await response.text();
+
+                productsContainer.innerHTML = html;
+                history.pushState({}, '', `?${params}`);
+                
+            } catch (error) {
+                productsContainer.innerHTML = `
+                    <div class="alert alert-danger">
+                        Error loading results. Please try again.
+                    </div>
+                `;
+            }
+        }
+    });
+
+    
     </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+    const productsEl = document.getElementById('products-container');
+    const links = document.querySelectorAll('nav ul li a[data-category]');
+
+    async function loadCategory(cat) {
+        // update URL
+        const url = cat ? `?category=${encodeURIComponent(cat)}` : window.location.pathname;
+        history.pushState({category:cat}, '', url);
+
+        // fetch HTML fragment
+        productsEl.innerHTML = '<div class="spinner-border"></div>';
+        try {
+        const res = await fetch(`category1.php?category=${encodeURIComponent(cat)}`);
+        if (!res.ok) throw new Error(res.statusText);
+        const html = await res.text();
+        productsEl.innerHTML = html;
+        } catch(err) {
+        productsEl.innerHTML = `<div class="alert alert-danger">Error loading category.</div>`;
+        console.error(err);
+        }
+    }
+
+    // Link click handlers
+    links.forEach(a=>{
+        a.addEventListener('click', e=>{
+        e.preventDefault();
+        const cat = a.getAttribute('data-category');
+        loadCategory(cat);
+        });
+    });
+
+    // Handle back/forward buttons
+    window.addEventListener('popstate', e=>{
+        const cat = e.state ? e.state.category : '';
+        loadCategory(cat);
+    });
+    });
+    </script>
+
+
+    <!-- Advanced Search Modal -->
+    <div class="modal fade" id="advancedSearchModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Advanced Search</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="advancedSearchForm">
+                        <div class="mb-3">
+                            <label class="form-label">Search Query</label>
+                            <input type="text" name="query" class="form-control">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-select">
+                                <option value="">All Categories</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Fashion</option>
+                                <option value="Book">Books</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Toy">Toys</option>
+                                <option value="Miscellaneous">Miscellaneous</option>
+                            </select>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col">
+                                <label class="form-label">Min Price (£)</label>
+                                <input type="number" name="min_price" class="form-control" step="0.01">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Max Price (£)</label>
+                                <input type="number" name="max_price" class="form-control" step="0.01">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="applyFilters">Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
