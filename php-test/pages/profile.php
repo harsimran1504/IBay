@@ -1,15 +1,15 @@
-<?php 
-session_start(); 
+<?php
+session_start();
 
 $servername = 'sci-project.lboro.ac.uk';
 $dbname = '295group5';
 $username = '295group5';
 $password = 'becvUgUxpXMijnWviR7h';
 
-$userId = $_SESSION['name'] ?? null;
+$userId = $_SESSION['userId'] ?? null;
 if (!$userId) {
     header("Location: login.php");
-    exit();
+    exit;
 }
 
 $conn = mysqli_connect($servername, $username, $password, $dbname);
@@ -19,90 +19,138 @@ if (!$conn) {
     // echo "Connected successfully";
 }
 
+// HANDLE FORM SUBMISSION
+$updated = false;
+$error   = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    //grab & sanitize
+    $firstName = mysqli_real_escape_string($conn, trim($_POST['firstName'] ?? ''));
+    $lastName  = mysqli_real_escape_string($conn, trim($_POST['lastName']  ?? ''));
+    $email     = mysqli_real_escape_string($conn, trim($_POST['email']     ?? ''));
+    $address   = mysqli_real_escape_string($conn, trim($_POST['address']   ?? ''));
+    $postcode  = mysqli_real_escape_string($conn, trim($_POST['postcode']  ?? ''));
+
+    //validate
+    if ($firstName === '' || $lastName === '' || $email === '' || $address === '' || $postcode === '') {
+        $error = "All fields are required.";
+    }
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error = "Please enter a valid email address.";
+    }
+    else {
+        //perform the UPDATE
+        $fullName = $firstName . ' ' . $lastName;
+        $sql = "
+          UPDATE iBayMembers
+             SET name     = '$fullName',
+                 email    = '$email',
+                 address  = '$address',
+                 postcode = '$postcode'
+           WHERE userId   = $userId
+        ";
+        if (mysqli_query($conn, $sql)) {
+            $updated = true;
+        } else {
+            $error = "DB error: " . mysqli_error($conn);
+        }
+    }
+}
+
+//FETCH CURRENT PROFILE DATA
+$sql    = "SELECT name, email, address, postcode FROM iBayMembers WHERE userId = $userId";
+$result = mysqli_query($conn, $sql);
+if (! $result || ! ($row = mysqli_fetch_assoc($result))) {
+    die("Unable to load profile data.");
+}
+
+//split the full name
+list($curFirst, $curLast) = array_pad(explode(' ', $row['name'], 2), 2, '');
+
+//escape for HTML
+$curFirst    = htmlspecialchars($curFirst);
+$curLast     = htmlspecialchars($curLast);
+$curEmail    = htmlspecialchars($row['email']);
+$curAddress  = htmlspecialchars($row['address']);
+$curPostcode = htmlspecialchars($row['postcode']);
+
+mysqli_close($conn);
 
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
-
+  
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/styles2.css">
+  <meta charset="UTF-8">
+  <title>Edit Profile | iBay</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles2.css">
+  <style>
+    .container { max-width:600px; margin:2rem auto; }
+    .alert     { margin-bottom:1.5rem; }
+  </style>
 </head>
 
 <body>
-    
-    <div class="WelcomeBar">
-        <p>Welcome, <?php echo htmlspecialchars($_SESSION['name']); ?></p>
-    </div>
+  <div class="container">
 
-    <div class = "ProfileBar"> 
-        <div class="Profile">
-            <a href="index.php">Back to Homepage</a>
-            <a href="../includes/logout.php">Sign Out</a>
-        </div>  
-        
-        <div class="BasketAndSellers">
-            <a href="basket.php"><img src="..." >View Basket</a>
-            <a href="sell.php"><img src="..." > Sell Item</a>
-        </div>
-    </div>
+    <!--  Success / Error -->
+    <?php if ($updated): ?>
+      <div class="alert alert-success">Profile updated successfully.</div>
+    <?php elseif ($error): ?>
+      <div class="alert alert-danger"><?= $error ?></div>
+    <?php endif; ?>
 
-    <div class= "Divider"> 
-        <hr class="solid">
-    </div>
+    <!--  Nav & Welcome -->
+    <h2>Account Settings</h2>
+    <p>
+      <a href="index.php">Home</a> |
+      <a href="../includes/logout.php">Sign Out</a>
+    </p>
+    <hr>
 
-    <class="row"> 
-        <div class="column-12 text-center mt-4 mb-4">
-            <h2 class="text-center">Profile Details</h2>
-        </div>
-        <div class="column-12 text-center mt-4 mb-4">
-            <h3 class="text-center">Name: <?php echo htmlspecialchars($_SESSION['name']); ?></h3>
-    </class>    
-    <class="ChangeAccountSettings">
-        <h2 class="text-center">Account Settings</h2>
-        <p class="text-center">Change your:</p>
-        <div class="d-flex justify-content-left">
-            <method="POST" action="" class="mt-4">
-                <div class="mb-3">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <input type="text" class="form-control" style="width: 500px;"  id="firstName" name="firstName" 
-                        value="<?php echo isset($firstName) ? htmlspecialchars($firstName) : ''; ?>" required> <!-- They stay onscreen if error occurs -->
-                </div>
+    <!--  Profile Edit Form -->
+    <form method="POST" action="profile.php" novalidate>
+      <div class="mb-3">
+        <label class="form-label" for="firstName">First Name</label>
+        <input class="form-control" id="firstName" name="firstName"
+               type="text" value="<?=$curFirst?>" required>
+      </div>
 
-                <div class="mb-3">
-                    <label for="lastName" class="form-label">Last Name</label>
-                    <input type="text" class="form-control" style="width: 500px;" id="lastName" name="lastName" 
-                        value="<?php echo isset($lastName) ? htmlspecialchars($lastName) : ''; ?>" required>
-                </div>
+      <div class="mb-3">
+        <label class="form-label" for="lastName">Last Name</label>
+        <input class="form-control" id="lastName" name="lastName"
+               type="text" value="<?=$curLast?>" required>
+      </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email address</label>
-                    <input type="email" class="form-control" style="width: 500px;" id="email" name="email" 
-                        value="<?php echo isset($email) ? htmlspecialchars($email) : ''; ?>" required>
-                </div>
+      <div class="mb-3">
+        <label class="form-label" for="email">Email address</label>
+        <input class="form-control" id="email" name="email"
+               type="email" value="<?=$curEmail?>" required>
+      </div>
 
-                <div class="mb-3">
-                    <label for="address" class="form-label">Address</label>
-                    <input type="address" class="form-control" style="width: 500px;" id="address" name="address" required>
-                </div>
+      <div class="mb-3">
+        <label class="form-label" for="address">Address</label>
+        <input class="form-control" id="address" name="address"
+               type="text" value="<?=$curAddress?>" required>
+      </div>
 
-                <div class="mb-3">
-                    <label for="postcode" class="form-label">Postcode</label>
-                    <input type="postcode" class="form-control" style="width: 500px;" id="postcode" name="postcode" required>
-                </div>
-                <button type="submit" class="btn btn-primary">Update Account</button>
-            </method>
-        </div>
-    </c>
+      <div class="mb-3">
+        <label class="form-label" for="postcode">Postcode</label>
+        <input class="form-control" id="postcode" name="postcode"
+               type="text" value="<?=$curPostcode?>" required>
+      </div>
 
+      <button type="submit" class="btn btn-primary">Update Account</button>
+    </form>
+
+  </div>
+
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+  </script>
 </body>
 </html>
-
-
-
-
-
