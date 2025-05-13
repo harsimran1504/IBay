@@ -46,6 +46,7 @@ if (!$conn) {
         <form action="search.php" method="GET">
             <input type="text" name="query" placeholder="Search for any item" aria-label="Search">
             <button class="btn btn-primary">Search</button>
+            <a href="advanced_search.php" class="text-decoration-none ms-2 advanced-link">Advanced</a>
         </form>
 
         <div class="profile-dropdown">
