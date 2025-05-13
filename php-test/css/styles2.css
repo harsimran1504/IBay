@@ -1,6 +1,6 @@
 
 :root {  /* ALL HTML ELEMENTS */
-  --primary-500: #0064D2;
+  --primary-500: #002853;
   --primary-700: #004A9F;
   --accent-500: #FF6A00;
   --bg-100: #F9FAFB;
@@ -91,6 +91,7 @@ a { text-decoration: none; color: inherit; }
   font-size: var(--fs-xl);
   font-weight: var(--fw-semibold);
   color: var(--primary-500);
+  font-size: 3rem;
 }
 .Title-SearchBar form {
   display: flex;

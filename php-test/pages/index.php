@@ -3,6 +3,9 @@
 // TEST LOGIN INFO, test@test.com, Test123.
 
 session_start(); // Start the session
+if (!isset($_SESSION['basket'])) {
+    $_SESSION['basket'] = [];
+}
 $servername = 'sci-project.lboro.ac.uk';
 $dbname = '295group5';
 $username = '295group5';
@@ -93,16 +96,19 @@ if (!$conn) {
             $result = mysqli_query($conn, $sql);
             if (mysqli_num_rows($result) > 0) {
                 while($row = mysqli_fetch_assoc($result)) {
-                    echo "<a href='product_details.php?id=" . $row['itemId'] . "' class='product-link'>";
-                    echo "<div class='product-item'>";
-                    ;
-                    $imageData = base64_encode($row['image']);
-                    $imageMime = $row['mimeType'];
-                    echo "<img src='data:$imageMime;base64,$imageData' alt='Product Image' class='product-image'>";
-                    echo "<div class='product-info'>";
-                    echo "<h2>" . htmlspecialchars($row["title"]) . "</h2>";
-                    echo "<p>£" . number_format($row["price"], 2) . " + " . htmlspecialchars($row["postage"]) . "</p>";
-                    echo "</div></div>";
+                    if ($row['finish'] == '0000-00-00 00:00:00'){
+                        echo "<a href='product_details.php?id=" . $row['itemId'] . "' class='product-link'>";
+                        echo "<div class='product-item'>";
+                        ;
+                        $imageData = base64_encode($row['image']);
+                        $imageMime = $row['mimeType'];
+                        echo "<img src='data:$imageMime;base64,$imageData' alt='Product Image' class='product-image'>";
+                        echo "<div class='product-info'>";
+                        echo "<h2>" . htmlspecialchars($row["title"]) . "</h2>";
+                        echo "<p>£" . number_format($row["price"], 2) . " + " . htmlspecialchars($row["postage"]) . "</p>";
+                        echo "</div></div>";
+                        echo "</a>";
+                    } 
                 }
             } else {
                 echo "<p>No items found.</p>";

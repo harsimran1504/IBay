@@ -14,8 +14,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header("Location: index.php");
     exit();
 }
-
-$stmt = mysqli_prepare($conn, "SELECT iBayItems.*, iBayImages2.image, iBayImages2.mimeType 
+// iBayItems.*, iBayImages2.image, iBayImages2.mimeType
+$stmt = mysqli_prepare($conn, "SELECT *
                               FROM iBayItems 
                               LEFT JOIN iBayImages2 
                               ON iBayItems.itemId = iBayImages2.itemId 
@@ -30,6 +30,8 @@ if (mysqli_num_rows($result) === 0) {
 }
 
 $item = mysqli_fetch_assoc($result);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -123,8 +125,8 @@ $item = mysqli_fetch_assoc($result);
                         <hr>
                         <p class="lead"><?php echo nl2br(htmlspecialchars($item['description'])); ?></p>
                         
-                        <?php if(isset($_SESSION['user_id'])): ?>
-                            <form action="../includes/add_to_basket.php" method="POST" class="mt-4">
+                        <?php if(isset($_SESSION['name'])): ?>
+                            <form action="basket.php" method="POST" class="mt-4">
                                 <input type="hidden" name="itemId" value="<?php echo $item['itemId']; ?>">
                                 <button type="submit" class="btn btn-primary btn-lg w-100">
                                     Add to Basket
@@ -132,7 +134,7 @@ $item = mysqli_fetch_assoc($result);
                             </form>
                         <?php else: ?>
                             <a href="basket.php" class="btn btn-outline-primary btn-lg w-100">
-                                Buy
+                                Buy <!--Change to prompt login to buy-->
                             </a>
                         <?php endif; ?>
                     </div>
