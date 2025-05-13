@@ -31,6 +31,16 @@ if (mysqli_num_rows($result) === 0) {
 
 $item = mysqli_fetch_assoc($result);
 
+// Fetch all images for this item
+$imageStmt = mysqli_prepare($conn, "SELECT image, mimeType FROM iBayImages2 WHERE itemId = ?");
+mysqli_stmt_bind_param($imageStmt, "i", $_GET['id']);
+mysqli_stmt_execute($imageStmt);
+$imageResult = mysqli_stmt_get_result($imageStmt);
+
+$images = [];
+while ($imgRow = mysqli_fetch_assoc($imageResult)) {
+    $images[] = $imgRow;
+}
 
 ?>
 <!DOCTYPE html>
@@ -105,14 +115,27 @@ $item = mysqli_fetch_assoc($result);
         <div class="product-details container mt-4">
             <div class="row">
                 <div class="col-md-6">
-                     <?php if(!empty($item['image'])): ?>
-                        <?php
-                        $imageData = base64_encode($item['image']);
-                        $imageMime = $item['mimeType'];
-                        ?>
-                        <img src="data:<?php echo $imageMime; ?>;base64,<?php echo $imageData; ?>" 
-                            class="img-fluid rounded-3" 
-                            alt="Product Image">
+                    <?php if (count($images) > 0): ?>
+                        <!-- Bootstrap Carousel for multiple images -->
+                        <div id="productImagesCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                <?php foreach ($images as $idx => $img): ?>
+                                    <div class="carousel-item <?php if ($idx === 0) echo 'active'; ?>">
+                                        <img src="data:<?php echo $img['mimeType']; ?>;base64,<?php echo base64_encode($img['image']); ?>"
+                                             class="d-block w-100 img-fluid rounded-3"
+                                             alt="Product Image <?php echo $idx + 1; ?>">
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <?php if (count($images) > 1): ?>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#productImagesCarousel" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#productImagesCarousel" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     <?php else: ?>
                         <img src="placeholder.jpg" class="img-fluid rounded-3" alt="Product Image">
                     <?php endif; ?>
